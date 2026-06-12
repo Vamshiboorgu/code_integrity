@@ -50,29 +50,29 @@ const KPICard: React.FC<KPICardProps> = ({
       background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
       border: `1px solid ${accentColor}25`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexShrink: 0, marginBottom: 4,
+      flexShrink: 0, marginBottom: 16,
       boxShadow: `0 4px 12px ${accentColor}20`,
     }}>
       <div style={{ color: accentColor }}>{icon}</div>
     </div>
 
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 4 }}>
-      <div>
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div style={{
-          fontSize: '1.625rem', fontWeight: 800, color: 'white',
+          fontSize: '1.75rem', fontWeight: 800, color: 'white',
           letterSpacing: '-0.04em', lineHeight: 1,
           fontVariantNumeric: 'tabular-nums',
         }} className="animate-count-up">
           {value}
         </div>
         <div style={{
-          fontSize: '0.6875rem', fontWeight: 600, color: 'rgba(255,255,255,0.38)',
-          textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: 4,
+          fontSize: '0.6875rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)',
+          textTransform: 'uppercase', letterSpacing: '0.07em',
         }}>
           {label}
         </div>
         {description && (
-          <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>{description}</div>
+          <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{description}</div>
         )}
       </div>
       {trend !== undefined && (

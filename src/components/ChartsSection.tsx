@@ -6,19 +6,34 @@ import {
 import { PieChart as PieIcon, TrendingUp, ShieldAlert } from 'lucide-react';
 import { mockKPIs, mockTrendData } from '../data/mockData';
 
-const TOOLTIP_STYLE = {
-  contentStyle: {
-    background: '#0a0f18', // Deep modern black
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '12px',
-    fontSize: '12px',
-    color: 'rgba(255,255,255,0.9)',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-    padding: '8px 12px',
-  },
-  labelStyle: { color: 'rgba(255,255,255,0.5)', fontWeight: 500, marginBottom: 4, fontSize: '11px', textTransform: 'uppercase' as const, letterSpacing: '0.05em' },
-  itemStyle: { fontWeight: 600 },
-  cursor: { fill: 'rgba(255,255,255,0.02)' },
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{
+        background: '#0a0f18',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '12px',
+        padding: '10px 14px',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+      }}>
+        {label && <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>{label}</div>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {payload.map((entry: any, index: number) => {
+            const color = entry.color || entry.payload?.color || 'white';
+            return (
+              <div key={`item-${index}`} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color }} />
+                <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500, fontSize: '13px' }}>
+                  {entry.name}: <span style={{ color: 'white', fontWeight: 700 }}>{entry.value}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+  return null;
 };
 
 const CardHeader: React.FC<{ icon: React.ReactNode; title: string; sub?: string; iconColor: string; iconBg: string }> = ({ icon, title, sub, iconColor, iconBg }) => (
@@ -89,15 +104,15 @@ export const ChartsSection: React.FC = () => {
         <div style={{ position: 'relative', height: 260 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie 
-                data={coverageData} cx="50%" cy="50%" 
-                innerRadius={75} outerRadius={105} 
+              <Pie
+                data={coverageData} cx="50%" cy="50%"
+                innerRadius={75} outerRadius={105}
                 paddingAngle={4} dataKey="value" stroke="none"
                 cornerRadius={6}
               >
                 {coverageData.map((entry, i) => <Cell key={i} fill={entry.color} fillOpacity={0.9} />)}
               </Pie>
-              <Tooltip {...TOOLTIP_STYLE} cursor={false} />
+              <Tooltip content={<CustomTooltip />} cursor={false} />
               <Legend content={<CustomLegend />} verticalAlign="bottom" />
             </PieChart>
           </ResponsiveContainer>
@@ -120,7 +135,7 @@ export const ChartsSection: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
               <XAxis dataKey="severity" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
               <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip {...TOOLTIP_STYLE} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
               <Legend content={<CustomLegend />} verticalAlign="bottom" />
               <Bar dataKey="Security" fill="#ef4444" radius={[6, 6, 0, 0]} barSize={24} />
               <Bar dataKey="Performance" fill="#f59e0b" radius={[6, 6, 0, 0]} barSize={24} />
@@ -146,15 +161,15 @@ export const ChartsSection: React.FC = () => {
               <CartesianGrid strokeDasharray="4 4" stroke="rgba(255,255,255,0.03)" vertical={false} />
               <XAxis dataKey="date" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
               <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 100]} />
-              <Tooltip {...TOOLTIP_STYLE} formatter={(val: number) => [`${val}%`, 'Coverage']} />
-              <Area 
-                type="monotone" 
-                dataKey="coverage" 
-                stroke="#818cf8" 
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+              <Area
+                type="monotone"
+                dataKey="coverage"
+                stroke="#818cf8"
                 strokeWidth={3}
                 fillOpacity={1}
-                fill="url(#colorCoverage)" 
-                activeDot={{ r: 6, fill: '#fff', stroke: '#818cf8', strokeWidth: 3, boxShadow: '0 0 10px rgba(129,140,248,0.5)' }} 
+                fill="url(#colorCoverage)"
+                activeDot={{ r: 6, fill: '#fff', stroke: '#818cf8', strokeWidth: 3 }}
               />
             </AreaChart>
           </ResponsiveContainer>

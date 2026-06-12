@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2 } from 'lucide-react';
 
 interface InputSectionProps {
@@ -8,8 +8,25 @@ interface InputSectionProps {
 export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
   const [repoUrl, setRepoUrl] = useState('https://github.com/company/main-api.git');
   const [branch, setBranch] = useState('main');
-  const [hasZip, setHasZip] = useState(false);
-  const [hasReq, setHasReq] = useState(true);
+  
+  const [zipName, setZipName] = useState('');
+  const [reqName, setReqName] = useState('');
+
+  const zipInputRef = useRef<HTMLInputElement>(null);
+  const reqInputRef = useRef<HTMLInputElement>(null);
+
+  const handleZipUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setZipName(e.target.files[0].name);
+      setRepoUrl('');
+    }
+  };
+
+  const handleReqUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setReqName(e.target.files[0].name);
+    }
+  };
 
   return (
     <div style={{
@@ -62,6 +79,10 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
         </div>
       </div>
 
+      {/* Hidden File Inputs */}
+      <input type="file" accept=".zip" ref={zipInputRef} style={{ display: 'none' }} onChange={handleZipUpload} />
+      <input type="file" accept=".csv,.xlsx,.pdf,.json" ref={reqInputRef} style={{ display: 'none' }} onChange={handleReqUpload} />
+
       {/* Inputs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', position: 'relative' }}>
 
@@ -76,7 +97,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
               value={repoUrl} onChange={e => setRepoUrl(e.target.value)}
               placeholder="https://github.com/org/repo.git"
               className="input mono"
-              style={{ paddingLeft: 32, fontSize: '0.8rem' }}
+              style={{ paddingLeft: 32, fontSize: '0.8rem', height: 44 }}
             />
           </div>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>GitHub, GitLab, Azure DevOps, Bitbucket</p>
@@ -88,18 +109,18 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
             <Upload size={11} /> Repository ZIP
           </label>
           <button
-            onClick={() => setHasZip(!hasZip)}
+            onClick={() => zipInputRef.current?.click()}
             style={{
-              width: '100%', height: 50, borderRadius: 10, cursor: 'pointer',
-              border: `1.5px dashed ${hasZip ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              background: hasZip ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.02)',
-              color: hasZip ? '#a5b4fc' : 'rgba(255,255,255,0.3)',
+              width: '100%', height: 44, borderRadius: 10, cursor: 'pointer',
+              border: `1.5px dashed ${zipName ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              background: zipName ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.02)',
+              color: zipName ? '#a5b4fc' : 'rgba(255,255,255,0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
               fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
             }}
           >
-            {hasZip
-              ? <><CheckCircle2 size={14} color="#818cf8" /> repo-main.zip (24 MB)</>
+            {zipName
+              ? <><CheckCircle2 size={14} color="#818cf8" /> {zipName}</>
               : <><FolderOpen size={14} /> Drop ZIP or click to browse</>}
           </button>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Optional. Overrides URL if provided.</p>
@@ -111,18 +132,18 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
             <FileText size={11} /> Requirements File
           </label>
           <button
-            onClick={() => setHasReq(!hasReq)}
+            onClick={() => reqInputRef.current?.click()}
             style={{
-              width: '100%', height: 50, borderRadius: 10, cursor: 'pointer',
-              border: `1.5px dashed ${hasReq ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              background: hasReq ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)',
-              color: hasReq ? '#c4b5fd' : 'rgba(255,255,255,0.3)',
+              width: '100%', height: 44, borderRadius: 10, cursor: 'pointer',
+              border: `1.5px dashed ${reqName ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              background: reqName ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)',
+              color: reqName ? '#c4b5fd' : 'rgba(255,255,255,0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
               fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
             }}
           >
-            {hasReq
-              ? <><CheckCircle2 size={14} color="#a78bfa" /> requirements-v2.4.xlsx</>
+            {reqName
+              ? <><CheckCircle2 size={14} color="#a78bfa" /> {reqName}</>
               : <><FileText size={14} /> Drop .xlsx, .csv, .json</>}
           </button>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Excel, CSV, JSON, or JIRA export</p>
@@ -130,7 +151,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
 
         {/* Branch + CTA */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' - '0.5rem' as any }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
             <GitBranch size={11} /> Target Branch
           </label>
           <div style={{ position: 'relative' }}>
@@ -139,7 +160,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
               value={branch} onChange={e => setBranch(e.target.value)}
               placeholder="main"
               className="input"
-              style={{ paddingLeft: 32 }}
+              style={{ paddingLeft: 32, height: 44 }}
             />
           </div>
           <button
