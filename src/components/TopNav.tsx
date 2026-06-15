@@ -75,8 +75,8 @@ export const TopNav: React.FC<TopNavProps> = ({ onScanStart, isScanning }) => {
           <Shield size={17} color="white" strokeWidth={2.5} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-            Code Integrity
+          <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 8 }}>
+            IB Code Integrity
           </span>
           <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.35)', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
             Traceability Engine
@@ -159,23 +159,6 @@ export const TopNav: React.FC<TopNavProps> = ({ onScanStart, isScanning }) => {
           : <><Play size={13} fill="currentColor" /> Run Scan</>}
       </button>
 
-      {/* Icon Buttons */}
-      {[
-        { icon: <Bell size={15} />, badge: true },
-        { icon: <HelpCircle size={15} /> },
-        { icon: <Settings size={15} /> },
-      ].map((btn, i) => (
-        <button key={i} style={{
-          position: 'relative', width: 32, height: 32, borderRadius: 8,
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
-          color: 'rgba(255,255,255,0.45)', cursor: 'pointer', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
-          flexShrink: 0,
-        }}>
-          {btn.icon}
-          {btn.badge && <span style={{ position: 'absolute', top: 6, right: 6, width: 5, height: 5, borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef4444' }} />}
-        </button>
-      ))}
 
       {/* Avatar */}
       <div style={{ position: 'relative', flexShrink: 0 }}>

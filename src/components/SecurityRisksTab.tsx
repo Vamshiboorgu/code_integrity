@@ -120,7 +120,7 @@ export const SecurityRisksTab: React.FC = () => {
           <table className="data-table">
             <thead>
               <tr>
-                <th>File</th><th>Risk Type</th><th>Severity</th><th>Linked Req.</th><th>Test Coverage</th><th>Description</th><th style={{ width: 32 }}></th>
+                <th>File</th><th>Risk Type</th><th>Severity</th><th>Linked Req.</th><th>Test Coverage</th><th>Description</th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +144,6 @@ export const SecurityRisksTab: React.FC = () => {
                   <td style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', maxWidth: 260 }}>
                     <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{risk.description}</span>
                   </td>
-                  <td><ExternalLink size={13} color="rgba(255,255,255,0.2)" /></td>
                 </tr>
               ))}
             </tbody>

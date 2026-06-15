@@ -61,7 +61,7 @@ export const DriftDetectionTab: React.FC = () => {
           <table className="data-table animate-fade-in">
             <thead>
               <tr>
-                <th>Req ID</th><th>Description</th><th>Category</th><th>Severity</th><th style={{ width: 32 }}></th>
+                <th>Req ID</th><th>Description</th><th>Category</th><th>Severity</th>
               </tr>
             </thead>
             <tbody>
@@ -74,7 +74,6 @@ export const DriftDetectionTab: React.FC = () => {
                   </td>
                   <td><span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.04)', padding: '0.15rem 0.5rem', borderRadius: 5 }}>{req.category}</span></td>
                   <td><span className={getSeverityBadgeClass(req.severity)}>{req.severity.toUpperCase()}</span></td>
-                  <td><ExternalLink size={13} color="rgba(255,255,255,0.2)" /></td>
                 </tr>
               ))}
             </tbody>

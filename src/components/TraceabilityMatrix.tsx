@@ -103,9 +103,6 @@ export const TraceabilityMatrix: React.FC<TraceabilityMatrixProps> = ({ onRequir
               className="input" style={{ paddingLeft: 32 }}
             />
           </div>
-          <button className="btn btn-secondary" style={{ gap: '0.375rem', flexShrink: 0 }}>
-            <SlidersHorizontal size={13} /> Filters
-          </button>
         </div>
       </div>
 

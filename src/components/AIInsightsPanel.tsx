@@ -76,19 +76,13 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({ isOpen, onTogg
                 return (
                   <div key={insight.id} style={{
                     padding: '1rem', borderRadius: 12, border: `1px solid ${border}`,
-                    background: bg, cursor: 'pointer', transition: 'all 0.15s',
-                  }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 12px ${color}15`; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
+                    background: bg
+                  }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', marginBottom: 6 }}>
                       <Icon size={15} color={color} style={{ marginTop: 2, flexShrink: 0 }} />
                       <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'white', lineHeight: 1.3 }}>{insight.title}</span>
                     </div>
                     <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, paddingLeft: '1.625rem' }}>{insight.description}</p>
-                    <button style={{
-                      paddingLeft: '1.625rem', marginTop: 8, fontSize: '0.75rem', color, background: 'none', border: 'none',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600, fontFamily: 'inherit',
-                    }}>
-                      {insight.action} <ChevronRight size={12} />
-                    </button>
                   </div>
                 );
               })}
@@ -109,9 +103,8 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({ isOpen, onTogg
               ].map((rec, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'flex-start', gap: '0.625rem', padding: '0.625rem',
-                  borderRadius: 10, cursor: 'pointer', transition: 'all 0.15s',
-                  background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
-                }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.04)'; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.02)'; }}>
+                  borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                }}>
                   <div style={{
                     width: 6, height: 6, borderRadius: '50%', marginTop: 5, flexShrink: 0,
                     background: rec.priority === 'critical' ? '#ef4444' : rec.priority === 'high' ? '#f59e0b' : '#3b82f6',
