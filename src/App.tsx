@@ -115,6 +115,12 @@ function App() {
         .catch(() => setRegressionsData(null));
 
       const reqList = resMap.requirements || [];
+      // Source of truth for "missing": the backend drift report. /api/trace always
+      // returns the top-K candidate blocks regardless of confidence, so block-count
+      // alone wrongly marks an unimplemented requirement as "partial". Honor drift.
+      const missingKeys = new Set<string>(
+        (resDrift.unimplemented_requirements || []).map((r: any) => r.key)
+      );
       const traceResults = await Promise.all(
         reqList.map((req: any) =>
           fetch(`${API_BASE}/api/trace?req=${encodeURIComponent(req.key)}`)
@@ -125,7 +131,10 @@ function App() {
 
       const processedRequirements: Requirement[] = traceResults.map((t: any, index: number) => {
         const apiReq = t.requirement || reqList[index];
-        const blocks = t.blocks || [];
+        const isMissing = missingKeys.has(apiReq.key);
+        // A missing requirement has no real implementation — drop the low-confidence
+        // candidate blocks so the detail view doesn't show phantom code/test files.
+        const blocks = isMissing ? [] : (t.blocks || []);
 
         const codeFiles = Array.from(new Set(blocks.map((b: any) => b.file))) as string[];
 
@@ -145,7 +154,7 @@ function App() {
         const coverage = totalBlocks > 0 ? Math.round((coveredBlocks / totalBlocks) * 100) : 0;
 
         let status: 'complete' | 'partial' | 'missing' = 'missing';
-        if (totalBlocks > 0) {
+        if (!isMissing && totalBlocks > 0) {
           status = coverage >= 80 ? 'complete' : 'partial';
         }
 
