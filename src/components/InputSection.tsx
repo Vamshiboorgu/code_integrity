@@ -1,15 +1,55 @@
 import React, { useState } from 'react';
-import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2 } from 'lucide-react';
+import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2, KeyRound, Plug, GitCompare } from 'lucide-react';
+
+export interface JiraConfig { url: string; email: string; token: string; jql: string; }
 
 interface InputSectionProps {
-  onSubmit: () => void;
+  onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string) => void;
+  initialJiraOpen?: boolean;
 }
 
-export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
-  const [repoUrl, setRepoUrl] = useState('https://github.com/company/main-api.git');
+export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJiraOpen }) => {
+  const [repoUrl, setRepoUrl] = useState('');
   const [branch, setBranch] = useState('main');
-  const [hasZip, setHasZip] = useState(false);
-  const [hasReq, setHasReq] = useState(true);
+  const [zipFile, setZipFile] = useState<File | null>(null);
+  const [reqFile, setReqFile] = useState<File | null>(null);
+  const [token, setToken] = useState('');
+  const [cr, setCr] = useState('');
+  const [jiraOpen, setJiraOpen] = useState(!!initialJiraOpen);
+  const [jiraUrl, setJiraUrl] = useState('');
+  const [jiraEmail, setJiraEmail] = useState('');
+  const [jiraToken, setJiraToken] = useState('');
+  const [jiraJql, setJiraJql] = useState('');
+
+  const buildJira = (): JiraConfig | null =>
+    (jiraUrl && jiraEmail && jiraToken)
+      ? { url: jiraUrl.trim().replace(/\/$/, ''), email: jiraEmail.trim(), token: jiraToken.trim(), jql: jiraJql.trim() || 'ORDER BY created DESC' }
+      : null;
+
+  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) setZipFile(e.target.files[0]);
+  };
+
+  const handleReqChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) setReqFile(e.target.files[0]);
+  };
+
+  const handleSubmit = () => {
+    // Warn up front — before the multi-minute scan — if there is no requirements
+    // source. Without Jira or a requirements file there is nothing to trace against,
+    // so the analysis would run for minutes only to land on an empty traceability view.
+    if (!buildJira() && !reqFile) {
+      const proceed = window.confirm(
+        'No requirements source connected.\n\n' +
+        'You have not connected Jira or uploaded a requirements file, so there is nothing ' +
+        'to trace this code and tests against — the traceability view will be empty.\n\n' +
+        'Click Cancel to add a requirements file or connect Jira first, or OK to analyze ' +
+        'the repository anyway (code, tests and risks only).'
+      );
+      if (!proceed) return;   // modal stays open, inputs preserved
+    }
+    onSubmit(repoUrl, branch, zipFile, reqFile, token, buildJira(), cr.trim());
+  };
 
   return (
     <div style={{
@@ -79,7 +119,43 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
               style={{ paddingLeft: 32, fontSize: '0.8rem' }}
             />
           </div>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>GitHub, GitLab, Azure DevOps, Bitbucket</p>
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Public repo URL — GitHub, GitLab, Bitbucket. Any language.</p>
+        </div>
+
+        {/* Access token (private repos) */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
+            <KeyRound size={11} /> Access Token
+          </label>
+          <div style={{ position: 'relative' }}>
+            <KeyRound size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
+            <input
+              type="password"
+              value={token} onChange={e => setToken(e.target.value)}
+              placeholder="ghp_… (only for private repos)"
+              className="input mono"
+              autoComplete="off"
+              style={{ paddingLeft: 32, fontSize: '0.8rem' }}
+            />
+          </div>
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Optional. Read-only token for private repos. Never stored.</p>
+        </div>
+
+        {/* CR reference (regression versioning) */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
+            <GitCompare size={11} /> CR Reference
+          </label>
+          <div style={{ position: 'relative' }}>
+            <GitCompare size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
+            <input
+              value={cr} onChange={e => setCr(e.target.value)}
+              placeholder="PROJ-1234 or CR-007"
+              className="input mono"
+              style={{ paddingLeft: 32, fontSize: '0.8rem' }}
+            />
+          </div>
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Jira key or change ref — tags this scan for regression tracking.</p>
         </div>
 
         {/* ZIP Upload */}
@@ -87,21 +163,22 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
             <Upload size={11} /> Repository ZIP
           </label>
-          <button
-            onClick={() => setHasZip(!hasZip)}
+          <label
             style={{
               width: '100%', height: 50, borderRadius: 10, cursor: 'pointer',
-              border: `1.5px dashed ${hasZip ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              background: hasZip ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.02)',
-              color: hasZip ? '#a5b4fc' : 'rgba(255,255,255,0.3)',
+              border: `1.5px dashed ${zipFile ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              background: zipFile ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.02)',
+              color: zipFile ? '#a5b4fc' : 'rgba(255,255,255,0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
               fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
+              margin: 0,
             }}
           >
-            {hasZip
-              ? <><CheckCircle2 size={14} color="#818cf8" /> repo-main.zip (24 MB)</>
+            <input type="file" style={{ display: 'none' }} accept=".zip" onChange={handleZipChange} />
+            {zipFile
+              ? <><CheckCircle2 size={14} color="#818cf8" /> {zipFile.name}</>
               : <><FolderOpen size={14} /> Drop ZIP or click to browse</>}
-          </button>
+          </label>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Optional. Overrides URL if provided.</p>
         </div>
 
@@ -110,27 +187,28 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
             <FileText size={11} /> Requirements File
           </label>
-          <button
-            onClick={() => setHasReq(!hasReq)}
+          <label
             style={{
               width: '100%', height: 50, borderRadius: 10, cursor: 'pointer',
-              border: `1.5px dashed ${hasReq ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              background: hasReq ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)',
-              color: hasReq ? '#c4b5fd' : 'rgba(255,255,255,0.3)',
+              border: `1.5px dashed ${reqFile ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              background: reqFile ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)',
+              color: reqFile ? '#c4b5fd' : 'rgba(255,255,255,0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
               fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
+              margin: 0,
             }}
           >
-            {hasReq
-              ? <><CheckCircle2 size={14} color="#a78bfa" /> requirements-v2.4.xlsx</>
+            <input type="file" style={{ display: 'none' }} accept=".xlsx,.csv,.json" onChange={handleReqChange} />
+            {reqFile
+              ? <><CheckCircle2 size={14} color="#a78bfa" /> {reqFile.name}</>
               : <><FileText size={14} /> Drop .xlsx, .csv, .json</>}
-          </button>
+          </label>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Excel, CSV, JSON, or JIRA export</p>
         </div>
 
         {/* Branch + CTA */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' - '0.5rem' as any }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
             <GitBranch size={11} /> Target Branch
           </label>
           <div style={{ position: 'relative' }}>
@@ -143,7 +221,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
             />
           </div>
           <button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             className="btn btn-primary"
             style={{ width: '100%', justifyContent: 'center', marginTop: 4, padding: '0.6875rem' }}
           >
@@ -151,6 +229,50 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit }) => {
             <ChevronRight size={14} />
           </button>
         </div>
+      </div>
+
+      {/* Jira connector */}
+      <div style={{ marginTop: '1.25rem' }}>
+        <button
+          onClick={() => setJiraOpen(o => !o)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            background: 'rgba(124,92,255,0.08)', border: '1px solid rgba(124,92,255,0.22)',
+            borderRadius: 10, padding: '0.5rem 0.875rem', cursor: 'pointer', fontFamily: 'inherit',
+            color: '#b9a8ff', fontSize: '0.8125rem', fontWeight: 600,
+          }}
+        >
+          <Plug size={14} /> Pull requirements from Jira {buildJira() ? '· configured' : '(optional)'}
+          <ChevronRight size={13} style={{ transform: jiraOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }} />
+        </button>
+
+        {jiraOpen && (
+          <div style={{
+            marginTop: '0.875rem', padding: '1rem',
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12,
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem',
+          }}>
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Jira URL</label>
+              <input value={jiraUrl} onChange={e => setJiraUrl(e.target.value)} placeholder="https://company.atlassian.net" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Email</label>
+              <input value={jiraEmail} onChange={e => setJiraEmail(e.target.value)} placeholder="you@company.com" className="input" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>API Token</label>
+              <input type="password" autoComplete="off" value={jiraToken} onChange={e => setJiraToken(e.target.value)} placeholder="Atlassian API token" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>JQL (optional)</label>
+              <input value={jiraJql} onChange={e => setJiraJql(e.target.value)} placeholder="project = ABC AND issuetype = Story" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+            </div>
+            <p style={{ gridColumn: '1 / -1', fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
+              When set, requirements are pulled live from Jira instead of a file. Token is sent only to your engine, never stored. Create one at id.atlassian.com/manage/api-tokens.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Status Bar */}

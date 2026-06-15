@@ -1,15 +1,18 @@
 import React from 'react';
 import { X, FileCode2, FlaskConical, ShieldAlert, ChevronRight, ExternalLink, BookOpen } from 'lucide-react';
-import { Requirement, mockSecurityRisks } from '../data/mockData';
+import { Requirement } from '../data/mockData';
 import { getStatusBadgeClass, getSeverityBadgeClass } from '../lib/utils';
+import { TypeBadge } from './TypeBadge';
 
 interface RequirementExplorerProps {
   requirement: Requirement;
   onClose: () => void;
+  securityRisks?: any[];
 }
 
-export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requirement, onClose }) => {
-  const linkedSecurityRisks = mockSecurityRisks.filter((r) => r.linkedRequirement === requirement.id);
+export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requirement, onClose, securityRisks }) => {
+  const risks = securityRisks || [];
+  const linkedSecurityRisks = risks.filter((r) => r.linkedRequirement === requirement.id);
 
   return (
     <div
@@ -54,7 +57,11 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: 6 }}>
                 <span className="code-tag code-tag-blue">{requirement.id}</span>
+                <TypeBadge type={requirement.type} size="md" />
                 <span className={getStatusBadgeClass(requirement.status)}>{requirement.status}</span>
+                {requirement.source && (
+                  <span style={{ fontSize: '0.625rem', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>via {requirement.source}</span>
+                )}
               </div>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'white', marginBottom: 6, letterSpacing: '-0.02em' }}>{requirement.name}</h2>
               <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>{requirement.description}</p>

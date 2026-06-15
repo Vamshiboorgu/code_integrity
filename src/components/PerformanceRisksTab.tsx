@@ -1,6 +1,6 @@
 import React from 'react';
 import { Zap, ArrowRight, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { mockPerformanceRisks } from '../data/mockData';
+import { PerformanceRisk } from '../data/mockData';
 import { getSeverityBadgeClass } from '../lib/utils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
@@ -11,25 +11,33 @@ const TOOLTIP_STYLE = {
   cursor: { fill: 'rgba(255,255,255,0.03)' },
 };
 
-export const PerformanceRisksTab: React.FC = () => {
-  const highRisks = mockPerformanceRisks.filter((r) => r.severity === 'high');
+interface PerformanceRisksTabProps {
+  performanceRisks?: PerformanceRisk[];
+}
 
-  const issueTypeCounts = mockPerformanceRisks.reduce((acc, r) => {
+export const PerformanceRisksTab: React.FC<PerformanceRisksTabProps> = ({ performanceRisks }) => {
+  const risks = performanceRisks || [];
+  const highRisks = risks.filter((r) => r.severity === 'high');
+
+  const issueTypeCounts = risks.reduce((acc, r) => {
     acc[r.issueType] = (acc[r.issueType] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const chartData = Object.entries(issueTypeCounts).map(([name, count]) => ({
-    name: name.length > 14 ? name.slice(0, 14) + '…' : name,
-    fullName: name,
-    count,
-    color: count > 1 ? '#ef4444' : '#f59e0b',
-  }));
+  const chartData = Object.entries(issueTypeCounts).map(([name, count]) => {
+    const c = count as number;
+    return {
+      name: name.length > 14 ? name.slice(0, 14) + '…' : name,
+      fullName: name,
+      count: c,
+      color: c > 1 ? '#ef4444' : '#f59e0b',
+    };
+  });
 
   const summaryCards = [
     { label: 'High Impact', count: highRisks.length, color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
-    { label: 'Medium Impact', count: mockPerformanceRisks.filter((r) => r.severity === 'medium').length, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-    { label: 'Low Impact', count: mockPerformanceRisks.filter((r) => r.severity === 'low').length, color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+    { label: 'Medium Impact', count: risks.filter((r) => r.severity === 'medium').length, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+    { label: 'Low Impact', count: risks.filter((r) => r.severity === 'low').length, color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
   ];
 
   return (
@@ -39,9 +47,10 @@ export const PerformanceRisksTab: React.FC = () => {
         {summaryCards.map(({ label, count, color, bg }, i) => (
           <div key={label} style={{
             animationDelay: `${i * 40}ms`,
-            background: 'linear-gradient(160deg, rgba(17,24,39,0.9) 0%, rgba(13,17,23,0.95) 100%)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 16, padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-default)',
+            boxShadow: 'var(--shadow-sm)',
+            borderRadius: 'var(--r-xl)', padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem',
           }} className="animate-fade-up">
             <div style={{ width: 44, height: 44, borderRadius: 12, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Zap size={20} color={color} />
@@ -56,7 +65,7 @@ export const PerformanceRisksTab: React.FC = () => {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         
-        <div style={{ background: 'linear-gradient(160deg, rgba(17,24,39,0.9) 0%, rgba(13,17,23,0.95) 100%)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '1.25rem' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', padding: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: '1rem' }}>
             <TrendingUp size={16} color="#fbbf24" />
             <span className="section-title">Issue Type Distribution</span>
@@ -77,7 +86,7 @@ export const PerformanceRisksTab: React.FC = () => {
           </ResponsiveContainer>
         </div>
 
-        <div style={{ background: 'linear-gradient(160deg, rgba(17,24,39,0.9) 0%, rgba(13,17,23,0.95) 100%)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '1.25rem' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', padding: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: '1rem' }}>
             <AlertTriangle size={16} color="#ef4444" />
             <span className="section-title">Critical Issues Requiring Action</span>
@@ -103,12 +112,11 @@ export const PerformanceRisksTab: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ background: 'linear-gradient(160deg, rgba(17,24,39,0.95) 0%, rgba(13,17,23,0.98) 100%)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent 10%, rgba(245,158,11,0.4) 50%, transparent 90%)' }} />
+      <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', overflow: 'hidden', position: 'relative' }}>
         
         <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Zap size={16} color="#fbbf24" />
-          <h3 className="section-title">All Performance Issues ({mockPerformanceRisks.length})</h3>
+          <h3 className="section-title">All Performance Issues ({risks.length})</h3>
         </div>
 
         <div style={{ overflowX: 'auto' }}>
@@ -119,7 +127,9 @@ export const PerformanceRisksTab: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {mockPerformanceRisks.map((risk, i) => (
+              {risks.length === 0 ? (
+                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No data available. Run a scan to view results.</td></tr>
+              ) : risks.map((risk, i) => (
                 <tr key={risk.id} style={{ animationDelay: `${i * 20}ms` }} className="animate-fade-in">
                   <td>
                     <code style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)' }}>{risk.fileName.split('/').pop()}</code>
