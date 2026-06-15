@@ -63,7 +63,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-const API_BASE = 'https://mixed-andy-technical-belong.trycloudflare.com';
+const API_BASE = 'https://tagged-harley-inputs-pamela.trycloudflare.com';
 
 function App() {
   const _init = parseHash();
