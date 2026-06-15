@@ -1,13 +1,23 @@
 import React from 'react';
-import { LayoutDashboard, FileText, Network, TestTube2, ShieldAlert, AlertTriangle, FileBarChart, Sparkles, Settings, Plug, ScrollText, Users, GitCompare } from 'lucide-react';
+import { LayoutDashboard, FileText, Network, TestTube2, ShieldAlert, AlertTriangle, FileBarChart, Sparkles, Settings, Plug, ScrollText, Users, GitCompare, ChevronRight, BookOpen } from 'lucide-react';
+
+const ROLE_META = {
+  ba:  { label: 'Business Analyst', short: 'BA',  color: '#7C5CFF', tint: 'rgba(124,92,255,0.18)', text: '#a5b4fc' },
+  dev: { label: 'Developer',        short: 'DEV', color: '#3B82F6', tint: 'rgba(59,130,246,0.18)', text: '#93c5fd' },
+  qa:  { label: 'QA Engineer',      short: 'QA',  color: '#F59E0B', tint: 'rgba(245,158,11,0.18)', text: '#fcd34d' },
+};
 
 interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   lastScanTime?: string;
+  role?: 'dev' | 'ba' | 'qa';
+  onSwitchRole?: (role: 'dev' | 'ba' | 'qa') => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastScanTime }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastScanTime, role = 'dev', onSwitchRole }) => {
+  const rm = ROLE_META[role];
+  const [roleMenu, setRoleMenu] = React.useState(false);
   const mainNav = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'requirements', label: 'Requirements', icon: FileText },
@@ -17,35 +27,37 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
     { id: 'issues', label: 'Issues', icon: AlertTriangle },
     { id: 'regressions', label: 'Regressions', icon: GitCompare },
     { id: 'reports', label: 'Reports', icon: FileBarChart },
-    { id: 'ai_insights', label: 'AI Insights', icon: Sparkles },
   ];
 
   const systemNav = [
-    { id: 'integrations', label: 'Integrations', icon: Plug },
-    { id: 'audit_logs', label: 'Audit Logs', icon: ScrollText },
-    { id: 'settings', label: 'Settings', icon: Settings },
-    { id: 'team', label: 'Team', icon: Users },
+    { id: 'integrations', label: 'Integrations', icon: Plug, disabled: true },
+    { id: 'audit_logs', label: 'Audit Logs', icon: ScrollText, disabled: true },
+    { id: 'settings', label: 'Settings', icon: Settings, disabled: true },
+    { id: 'team', label: 'Team', icon: Users, disabled: true },
+    { id: 'docs', label: 'Read Docs', icon: BookOpen },
   ];
 
-  const NavItem = ({ item }: { item: typeof mainNav[0] }) => {
+  const NavItem = ({ item }: { item: typeof mainNav[0] & { disabled?: boolean } }) => {
     const active = activeTab === item.id;
     return (
       <button
-        onClick={() => onTabChange(item.id)}
+        disabled={item.disabled}
+        onClick={() => !item.disabled && onTabChange(item.id)}
         style={{
           display: 'flex', alignItems: 'center', gap: '0.875rem',
           width: '100%', padding: '0.625rem 1rem',
           background: active ? 'linear-gradient(90deg, rgba(79,70,229,0.15) 0%, transparent 100%)' : 'transparent',
           border: 'none', borderLeft: `3px solid ${active ? '#6366f1' : 'transparent'}`,
-          color: active ? '#fff' : 'rgba(255,255,255,0.45)',
-          cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+          color: item.disabled ? 'rgba(255,255,255,0.15)' : active ? '#fff' : 'rgba(255,255,255,0.45)',
+          cursor: item.disabled ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'all 0.15s',
           fontSize: '0.875rem', fontWeight: active ? 600 : 500,
         }}
-        onMouseEnter={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; }}
-        onMouseLeave={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.45)'; }}
+        onMouseEnter={e => { if (!active && !item.disabled) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; }}
+        onMouseLeave={e => { if (!active && !item.disabled) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.45)'; }}
       >
         <item.icon size={18} color={active ? '#818cf8' : 'currentColor'} />
-        {item.label}
+        <span style={{ flex: 1 }}>{item.label}</span>
+        {item.disabled && <span style={{ fontSize: '0.55rem', fontWeight: 800, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>WIP</span>}
       </button>
     );
   };
@@ -85,17 +97,68 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
         </div>
       </div>
 
-      <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Last Scan</div>
+      {/* Last Scan status */}
+      <div style={{ padding: '0.75rem 1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Last Scan</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fff' }}>Completed</div>
-            <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>{lastScanTime || 'Not run yet'}</div>
-          </div>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 6px rgba(34,197,94,0.5)', flexShrink: 0 }} />
+          <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{lastScanTime || 'Not run yet'}</span>
         </div>
+      </div>
+
+      {/* Profile footer / Role Switcher */}
+      <div style={{ position: 'relative' }}>
+        <div onClick={() => setRoleMenu(o => !o)} style={{
+          padding: '0.875rem 1rem',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          display: 'flex', alignItems: 'center', gap: '0.75rem',
+          background: roleMenu ? 'rgba(255,255,255,0.04)' : `linear-gradient(90deg, ${rm.tint} 0%, transparent 100%)`,
+          cursor: 'pointer', transition: 'all 0.15s'
+        }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+            background: rm.tint, border: `1px solid ${rm.color}40`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.6875rem', fontWeight: 800, color: rm.text,
+            boxShadow: `0 0 12px ${rm.color}30`,
+          }}>{rm.short}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rm.label}</div>
+            <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>Workspace</div>
+          </div>
+          <ChevronRight size={13} color="rgba(255,255,255,0.2)" style={{ transform: roleMenu ? 'rotate(-90deg)' : 'none', transition: 'transform 0.15s' }} />
+        </div>
+
+        {roleMenu && (
+          <>
+            <div onClick={() => setRoleMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
+            <div style={{
+              position: 'absolute', bottom: 'calc(100% + 6px)', left: 16, right: 16, zIndex: 50,
+              background: '#1A1D24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
+              boxShadow: '0 4px 24px rgba(0,0,0,0.5)', padding: 6,
+            }}>
+              <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '6px 10px 4px' }}>Switch workspace</div>
+              {(['ba', 'dev', 'qa'] as const).map(r => {
+                const m = ROLE_META[r];
+                const active = r === role;
+                return (
+                  <button key={r} onClick={() => { setRoleMenu(false); if (!active) onSwitchRole?.(r); }} style={{
+                    display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left',
+                    padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                    background: active ? m.tint : 'transparent',
+                    transition: 'background 0.12s',
+                  }}
+                    onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                    onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 6, background: m.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 700, color: m.text }}>{m.short}</div>
+                    <span style={{ flex: 1, fontSize: '0.8rem', color: '#fff', fontWeight: active ? 600 : 400 }}>{m.label}</span>
+                    {active && <span style={{ width: 6, height: 6, borderRadius: '50%', background: m.color }} />}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -48,7 +48,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
       );
       if (!proceed) return;   // modal stays open, inputs preserved
     }
-    onSubmit(repoUrl, branch, zipFile, reqFile, token, buildJira(), cr.trim());
+    onSubmit(repoUrl, 'main', zipFile, reqFile, '', buildJira(), '');
   };
 
   return (
@@ -122,66 +122,6 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Public repo URL — GitHub, GitLab, Bitbucket. Any language.</p>
         </div>
 
-        {/* Access token (private repos) */}
-        <div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
-            <KeyRound size={11} /> Access Token
-          </label>
-          <div style={{ position: 'relative' }}>
-            <KeyRound size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
-            <input
-              type="password"
-              value={token} onChange={e => setToken(e.target.value)}
-              placeholder="ghp_… (only for private repos)"
-              className="input mono"
-              autoComplete="off"
-              style={{ paddingLeft: 32, fontSize: '0.8rem' }}
-            />
-          </div>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Optional. Read-only token for private repos. Never stored.</p>
-        </div>
-
-        {/* CR reference (regression versioning) */}
-        <div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
-            <GitCompare size={11} /> CR Reference
-          </label>
-          <div style={{ position: 'relative' }}>
-            <GitCompare size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
-            <input
-              value={cr} onChange={e => setCr(e.target.value)}
-              placeholder="PROJ-1234 or CR-007"
-              className="input mono"
-              style={{ paddingLeft: 32, fontSize: '0.8rem' }}
-            />
-          </div>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Jira key or change ref — tags this scan for regression tracking.</p>
-        </div>
-
-        {/* ZIP Upload */}
-        <div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
-            <Upload size={11} /> Repository ZIP
-          </label>
-          <label
-            style={{
-              width: '100%', height: 50, borderRadius: 10, cursor: 'pointer',
-              border: `1.5px dashed ${zipFile ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              background: zipFile ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.02)',
-              color: zipFile ? '#a5b4fc' : 'rgba(255,255,255,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-              fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
-              margin: 0,
-            }}
-          >
-            <input type="file" style={{ display: 'none' }} accept=".zip" onChange={handleZipChange} />
-            {zipFile
-              ? <><CheckCircle2 size={14} color="#818cf8" /> {zipFile.name}</>
-              : <><FolderOpen size={14} /> Drop ZIP or click to browse</>}
-          </label>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Optional. Overrides URL if provided.</p>
-        </div>
-
         {/* Requirements */}
         <div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
@@ -206,29 +146,18 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Excel, CSV, JSON, or JIRA export</p>
         </div>
 
-        {/* Branch + CTA */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
-            <GitBranch size={11} /> Target Branch
-          </label>
-          <div style={{ position: 'relative' }}>
-            <GitBranch size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.25)', pointerEvents: 'none' }} />
-            <input
-              value={branch} onChange={e => setBranch(e.target.value)}
-              placeholder="main"
-              className="input"
-              style={{ paddingLeft: 32 }}
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            className="btn btn-primary"
-            style={{ width: '100%', justifyContent: 'center', marginTop: 4, padding: '0.6875rem' }}
-          >
-            Analyze Repository
-            <ChevronRight size={14} />
-          </button>
-        </div>
+      </div>
+
+      {/* CTA */}
+      <div style={{ marginTop: '1.5rem' }}>
+        <button
+          onClick={handleSubmit}
+          className="btn btn-primary"
+          style={{ width: '100%', justifyContent: 'center', padding: '0.75rem' }}
+        >
+          Analyze Repository
+          <ChevronRight size={14} />
+        </button>
       </div>
 
       {/* Jira connector */}

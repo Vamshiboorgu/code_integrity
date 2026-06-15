@@ -45,27 +45,8 @@ export const DocsPage: React.FC<DocsPageProps> = ({ onBack, onLaunch }) => {
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
-      {/* Top bar */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 26px', borderBottom: '1px solid var(--border-subtle)', background: 'rgba(10,10,20,0.85)', backdropFilter: 'blur(16px)',
-      }}>
-        <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem' }}>
-          <ArrowLeft size={16} /> Back
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg, #7C5CFF, #6D4AF0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FileCode2 size={14} color="#fff" />
-          </div>
-          <span style={{ fontWeight: 700, letterSpacing: '-0.02em' }}>CodeTrace Docs</span>
-        </div>
-        <button onClick={onLaunch} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
-          <Rocket size={14} /> Launch app
-        </button>
-      </header>
-
-      <div style={{ display: 'flex', maxWidth: 1100, margin: '0 auto', gap: 40, padding: '40px 26px 80px' }}>
+    <div style={{ color: 'var(--text-primary)' }}>
+      <div style={{ display: 'flex', width: '100%', gap: 40, padding: '0 0 40px' }}>
         {/* TOC */}
         <aside style={{ width: 200, flexShrink: 0, position: 'sticky', top: 90, alignSelf: 'flex-start', display: 'none' }} className="docs-toc">
           <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>On this page</div>
@@ -215,11 +196,6 @@ pip install tree-sitter tree-sitter-language-pack psycopg2-binary`}
             </pre>
             Then open the dashboard, hit <strong>Run Scan</strong>, paste a repo URL (or connect Jira), and analyze.
           </Section>
-
-          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 28, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Ready to trace your codebase?</span>
-            <button onClick={onLaunch} className="btn btn-primary" style={{ padding: '10px 20px' }}><Rocket size={15} /> Launch CodeTrace</button>
-          </div>
         </main>
       </div>
     </div>

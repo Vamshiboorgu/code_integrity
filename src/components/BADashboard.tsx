@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { FileText, CheckCircle2, AlertCircle, XCircle, Clock, ArrowRight, Activity, ArrowUpRight, CheckSquare, Target } from 'lucide-react';
+import { FileText, CheckCircle2, AlertCircle, XCircle, Clock, ArrowRight, Activity, ArrowUpRight, CheckSquare, Target, Briefcase } from 'lucide-react';
 import { Requirement } from '../data/mockData';
 import { TYPE_META, TYPE_ORDER } from './TypeBadge';
 
@@ -82,7 +82,10 @@ export const BADashboard: React.FC<BADashboardProps> = ({ requirements, kpis, hi
       
       {/* Header Area */}
       <div style={{ marginBottom: 8 }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>Business Analyst Workspace <span style={{ fontWeight: 'normal' }}>👋</span></h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>
+          <Briefcase size={26} color="#7C5CFF" />
+          Business Analyst Workspace <span style={{ fontWeight: 'normal' }}>👋</span>
+        </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Track requirement implementation and ensure business objectives are met.</p>
       </div>
 

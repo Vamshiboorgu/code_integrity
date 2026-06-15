@@ -7,13 +7,11 @@ interface TopBarProps {
   isScanning: boolean;
   scanMessage?: string;
   onRunScan: () => void;
-  onToggleAI: () => void;
   role: 'dev' | 'ba' | 'qa';
   repo?: string;
   branch?: string;
   requirements?: Requirement[];
   onSelectResult?: (req: Requirement) => void;
-  onSwitchRole?: (role: 'dev' | 'ba' | 'qa') => void;
 }
 
 const ROLE_META = {
@@ -24,11 +22,10 @@ const ROLE_META = {
 
 const statusColor = (s: string) => (s === 'complete' ? '#22C55E' : s === 'partial' ? '#F59E0B' : '#F43F5E');
 
-export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunScan, onToggleAI, role, repo, branch, requirements, onSelectResult, onSwitchRole }) => {
+export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunScan, role, repo, branch, requirements, onSelectResult }) => {
   const rm = ROLE_META[role];
   const [q, setQ] = useState('');
   const [focused, setFocused] = useState(false);
-  const [roleMenu, setRoleMenu] = useState(false);
 
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -50,67 +47,18 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
       backdropFilter: 'blur(16px)',
       position: 'sticky', top: 0, zIndex: 30,
     }}>
-      {/* Left controls (Role switcher, Project, Branch) */}
+      {/* Left: Project + Branch context */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ position: 'relative' }}>
-          <button onClick={() => setRoleMenu(o => !o)} style={{
-            display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.03)',
-            border: `1px solid ${roleMenu ? rm.color + '55' : 'rgba(255,255,255,0.06)'}`,
-            padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit',
-          }}>
-            <div style={{ width: 24, height: 24, borderRadius: 6, background: rm.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, color: rm.text }}>
-              {rm.short}
-            </div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500 }}>{rm.label} View</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)', transform: roleMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          {roleMenu && (
-            <>
-              <div onClick={() => setRoleMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
-              <div style={{
-                position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 50, minWidth: 200,
-                background: 'var(--bg-elevated)', border: '1px solid var(--border-strong)', borderRadius: 12,
-                boxShadow: '0 16px 40px rgba(0,0,0,0.6)', padding: 6,
-              }}>
-                <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '6px 10px 4px' }}>Switch workspace</div>
-                {(['ba', 'dev', 'qa'] as const).map(r => {
-                  const m = ROLE_META[r];
-                  const active = r === role;
-                  return (
-                    <button key={r} onClick={() => { setRoleMenu(false); if (!active) onSwitchRole?.(r); }} style={{
-                      display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left',
-                      padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                      background: active ? 'rgba(255,255,255,0.05)' : 'transparent',
-                    }}
-                      onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-                      onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 6, background: m.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 700, color: m.text }}>{m.short}</div>
-                      <span style={{ flex: 1, fontSize: '0.8rem', color: 'var(--text-primary)' }}>{m.label}</span>
-                      {active && <span style={{ width: 6, height: 6, borderRadius: '50%', background: m.color }} />}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </div>
-
-        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.08)' }} />
-
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontSize: '0.625rem', color: 'var(--text-muted)' }}>Project</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace" }}>{repo || '—'}</span>
-          </div>
+          <span style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace" }}>{repo || '—'}</span>
         </div>
 
         <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.08)' }} />
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontSize: '0.625rem', color: 'var(--text-muted)' }}>Branch</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace" }}>{branch || '—'}</span>
-          </div>
+          <span style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace" }}>{branch || '—'}</span>
         </div>
       </div>
 
@@ -189,8 +137,15 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
           </div>
         )}
 
-        <button onClick={onRunScan} className="btn btn-primary" style={{ height: 42, padding: '0 18px', fontSize: '0.875rem', borderRadius: 12 }}>
-          <ScanLine size={16} /> Run Scan
+        <button onClick={onRunScan} style={{
+          height: 42, padding: '0 16px', borderRadius: 12,
+          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+          color: 'var(--text-primary)', cursor: 'pointer', fontFamily: 'inherit',
+          fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.15s'
+        }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
+          Check another repo
         </button>
 
         <button style={{
@@ -201,27 +156,6 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
           <Bell size={17} />
           <span style={{ position: 'absolute', top: 9, right: 10, width: 7, height: 7, borderRadius: '50%', background: 'var(--danger)', border: '2px solid var(--bg-surface)' }} />
         </button>
-
-        <button onClick={onToggleAI} style={{
-          width: 42, height: 42, borderRadius: 12,
-          background: 'rgba(124,92,255,0.1)', border: '1px solid rgba(124,92,255,0.25)',
-          color: 'var(--accent-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }} title="AI Insights">
-          <Sparkles size={17} />
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 6 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: rm.tint, border: `1px solid ${rm.color}55`,
-            color: rm.text, fontSize: '0.6875rem', fontWeight: 800,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>{rm.short}</div>
-          <div style={{ lineHeight: 1.2 }}>
-            <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>{rm.label}</div>
-            <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Workspace</div>
-          </div>
-        </div>
       </div>
     </header>
   );

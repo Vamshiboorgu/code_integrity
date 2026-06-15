@@ -19,7 +19,6 @@ import { RoleSelection } from './components/RoleSelection';
 import { BADashboard } from './components/BADashboard';
 import { ScanModal } from './components/ScanModal';
 import { ScanProgress } from './components/ScanProgress';
-import { LandingPage } from './components/LandingPage';
 import { DocsPage } from './components/DocsPage';
 import { CodeMapView } from './components/CodeMapView';
 import { TestsView } from './components/TestsView';
@@ -30,19 +29,17 @@ import { SettingsView } from './components/SettingsView';
 import { TeamView } from './components/TeamView';
 import { RegressionsView } from './components/RegressionsView';
 import { Requirement, SecurityRisk, PerformanceRisk, OrphanCode, DeadTest } from './data/mockData';
-import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, Terminal, ShieldCheck } from 'lucide-react';
 
 type Tab = 'overview' | 'traceability' | 'drift' | 'security' | 'performance';
 
 // Hash routing: parse window.location.hash into the app's screen state so the URL
 // reflects where you are and the browser Back button works.
-type Screen = { landing: boolean; docs: boolean; role: 'dev' | 'ba' | 'qa' | null; view: string };
+type Screen = { role: 'dev' | 'ba' | 'qa' | null; view: string };
 function parseHash(): Screen {
   const h = (typeof window !== 'undefined' ? window.location.hash.replace(/^#/, '') : '') || '/';
-  if (h === '/docs') return { landing: false, docs: true, role: null, view: 'dashboard' };
-  if (h === '/start') return { landing: false, docs: false, role: null, view: 'dashboard' };
-  if (h.startsWith('/app')) return { landing: false, docs: false, role: 'dev', view: h.split('/')[2] || 'dashboard' };
-  return { landing: true, docs: false, role: null, view: 'dashboard' };
+  if (h.startsWith('/app')) return { role: 'dev', view: h.split('/')[2] || 'dashboard' };
+  return { role: null, view: 'dashboard' };
 }
 
 // Read a File as a base64 data URL (backend strips the prefix and decodes it).
@@ -55,10 +52,10 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+const API_BASE = 'https://mixed-andy-technical-belong.trycloudflare.com';
+
 function App() {
   const _init = parseHash();
-  const [showLanding, setShowLanding] = useState(_init.landing);
-  const [showDocs, setShowDocs] = useState(_init.docs);
   const [role, setRole] = useState<'dev' | 'ba' | 'qa' | null>(_init.role);
   const [view, setView] = useState<string>(_init.view);
   const [scanJiraOpen, setScanJiraOpen] = useState(false);
@@ -87,37 +84,41 @@ function App() {
 
   const fetchBackendData = useCallback(async () => {
     try {
-      const API_BASE = window.location.port === '5173' ? 'http://127.0.0.1:8000' : '';
-
       const [resMetrics, resMap, resDrift, resRisks] = await Promise.all([
-        fetch(`${API_BASE}/api/metrics`).then(r => r.json()),
-        fetch(`${API_BASE}/api/map`).then(r => r.json()),
-        fetch(`${API_BASE}/api/drift`).then(r => r.json()),
-        fetch(`${API_BASE}/api/risks`).then(r => r.json()),
+        fetch(`${API_BASE}/api/metrics`, { credentials: 'include' }).then(r => r.json()),
+        fetch(`${API_BASE}/api/map`, { credentials: 'include' }).then(r => r.json()),
+        fetch(`${API_BASE}/api/drift`, { credentials: 'include' }).then(r => r.json()),
+        fetch(`${API_BASE}/api/risks`, { credentials: 'include' }).then(r => r.json()),
       ]);
 
       // Store raw metrics for sidebar
       setBackendMetrics(resMetrics);
 
       // Scan history for the Coverage Trend + KPI sparklines (real data).
-      fetch(`${API_BASE}/api/history`).then(r => r.json())
+      fetch(`${API_BASE}/api/history`, { credentials: 'include' }).then(r => r.json())
         .then(d => setHistory(d.history || []))
         .catch(() => setHistory([]));
 
       // Integrations: is the Postgres system-of-record reachable?
-      fetch(`${API_BASE}/api/projects`).then(r => r.json())
+      fetch(`${API_BASE}/api/projects`, { credentials: 'include' }).then(r => r.json())
         .then(d => setPostgresEnabled(!!d.enabled))
         .catch(() => setPostgresEnabled(false));
 
       // Regression versioning: diff latest scan vs the approved baseline.
-      fetch(`${API_BASE}/api/regressions`).then(r => r.json())
+      fetch(`${API_BASE}/api/regressions`, { credentials: 'include' }).then(r => r.json())
         .then(d => setRegressionsData(d))
         .catch(() => setRegressionsData(null));
 
       const reqList = resMap.requirements || [];
+      // Source of truth for "missing": the backend drift report. /api/trace always
+      // returns the top-K candidate blocks regardless of confidence, so block-count
+      // alone wrongly marks an unimplemented requirement as "partial". Honor drift.
+      const missingKeys = new Set<string>(
+        (resDrift.unimplemented_requirements || []).map((r: any) => r.key)
+      );
       const traceResults = await Promise.all(
         reqList.map((req: any) =>
-          fetch(`${API_BASE}/api/trace?req=${encodeURIComponent(req.key)}`)
+          fetch(`${API_BASE}/api/trace?req=${encodeURIComponent(req.key)}`, { credentials: 'include' })
             .then(r => r.json())
             .catch(() => ({ requirement: req, blocks: [] }))
         )
@@ -125,7 +126,10 @@ function App() {
 
       const processedRequirements: Requirement[] = traceResults.map((t: any, index: number) => {
         const apiReq = t.requirement || reqList[index];
-        const blocks = t.blocks || [];
+        const isMissing = missingKeys.has(apiReq.key);
+        // A missing requirement has no real implementation — drop the low-confidence
+        // candidate blocks so the detail view doesn't show phantom code/test files.
+        const blocks = isMissing ? [] : (t.blocks || []);
 
         const codeFiles = Array.from(new Set(blocks.map((b: any) => b.file))) as string[];
 
@@ -145,7 +149,7 @@ function App() {
         const coverage = totalBlocks > 0 ? Math.round((coveredBlocks / totalBlocks) * 100) : 0;
 
         let status: 'complete' | 'partial' | 'missing' = 'missing';
-        if (totalBlocks > 0) {
+        if (!isMissing && totalBlocks > 0) {
           status = coverage >= 80 ? 'complete' : 'partial';
         }
 
@@ -354,7 +358,7 @@ function App() {
       setScanStartMs(Date.now());
       setScanStatus({ state: 'cloning', stage: 'Starting…', step: 0, total: 0 });
 
-      const API_BASE = window.location.port === '5173' ? 'http://127.0.0.1:8000' : '';
+      setScanStatus({ state: 'cloning', stage: 'Starting…', step: 0, total: 0 });
 
       try {
         const payload: any = { repo_url: url, branch: (branch || '').trim() };
@@ -368,6 +372,7 @@ function App() {
 
         const res = await fetch(`${API_BASE}/api/scan`, {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
@@ -380,7 +385,7 @@ function App() {
         // eslint-disable-next-line no-constant-condition
         while (true) {
           await new Promise(r => setTimeout(r, 1500));
-          const status = await fetch(`${API_BASE}/api/scan/status`).then(r => r.json());
+          const status = await fetch(`${API_BASE}/api/scan/status`, { credentials: 'include' }).then(r => r.json());
           setScanStatus(status);
           if (status.message) setScanMessage(status.message);
           if (status.state === 'done') break;
@@ -425,8 +430,6 @@ function App() {
     if (!window.location.hash) window.history.replaceState(null, '', '#/');
     const apply = () => {
       const s = parseHash();
-      setShowLanding(s.landing);
-      setShowDocs(s.docs);
       setView(s.view);
       if (s.role === null) setRole(null);          // '/' or '/start' clears role
       else setRole(r => r || 'dev');               // '/app' keeps role, defaults to dev
@@ -446,20 +449,20 @@ function App() {
 
   // Approve the latest scan as the regression baseline.
   const setBaseline = useCallback(async () => {
-    const API_BASE = window.location.port === '5173' ? 'http://127.0.0.1:8000' : '';
     try {
-      await fetch(`${API_BASE}/api/baseline`, { method: 'POST' });
-      const d = await fetch(`${API_BASE}/api/regressions`).then(r => r.json());
+      await fetch(`${API_BASE}/api/baseline`, { method: 'POST', credentials: 'include' });
+      const d = await fetch(`${API_BASE}/api/regressions`, { credentials: 'include' }).then(r => r.json());
       setRegressionsData(d);
     } catch { /* ignore */ }
   }, []);
 
   // Grounded AI assistant — answers from the live analysis via the local LLM.
   const askAI = useCallback(async (question: string): Promise<{ ok: boolean; answer?: string; error?: string }> => {
-    const API_BASE = window.location.port === '5173' ? 'http://127.0.0.1:8000' : '';
     try {
       const res = await fetch(`${API_BASE}/api/ask`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', 
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
       });
       return await res.json();
@@ -479,23 +482,6 @@ function App() {
     (100 - Math.min(100, ((kpis.securityRisks || 0) + (kpis.performanceRisks || 0)) * 8)) * 0.15
   ))) : 0;
 
-  if (showDocs) {
-    return <DocsPage onBack={() => navigate('/')} onLaunch={() => navigate('/app/dashboard')} />;
-  }
-
-  if (showLanding) {
-    return (
-      <LandingPage
-        onLaunch={() => navigate('/start')}
-        onScan={() => { setScanJiraOpen(false); setScanModalOpen(true); navigate('/app/dashboard'); }}
-        onJira={() => { setScanJiraOpen(true); setScanModalOpen(true); navigate('/app/dashboard'); }}
-        onDemo={() => navigate('/app/dashboard')}
-        onDocs={() => navigate('/docs')}
-        onNav={(hash) => navigate(hash)}
-      />
-    );
-  }
-
   if (!role) {
     return <RoleSelection onSelect={(r) => { setRole(r); navigate('/app/dashboard'); }} />;
   }
@@ -510,52 +496,25 @@ function App() {
           else navigate('/app/' + id);
         }}
         lastScanTime={lastScanLabel}
+        role={role ?? 'dev'}
+        onSwitchRole={(r) => { setRole(r); navigate('/app/dashboard'); }}
       />
 
       {/* Main Content */}
-      <main className="app-main" style={{
-        marginRight: aiPanelOpen ? 320 : 0
-      }}>
+      <main className="app-main">
         <TopBar
           isScanning={isScanning}
           scanMessage={scanMessage}
           onRunScan={() => setScanModalOpen(true)}
-          onToggleAI={() => setAiPanelOpen(o => !o)}
           role={role}
           repo={backendMetrics?.repo}
           branch={backendMetrics?.branch}
           requirements={requirements}
           onSelectResult={setSelectedRequirement}
-          onSwitchRole={(r) => { setRole(r); navigate('/app/dashboard'); }}
         />
 
-        <div style={{ flex: 1, padding: '24px 26px' }}>
-          {['dashboard', 'requirements'].includes(view) && requirements.length === 0 && !isScanning && (
-            <div style={{
-              display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 16,
-              padding: '18px 20px', borderRadius: 14,
-              background: 'rgba(124,92,255,0.08)', border: '1px solid rgba(124,92,255,0.28)',
-            }}>
-              <AlertCircle size={20} color="var(--accent)" style={{ flexShrink: 0, marginTop: 2 }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
-                  No requirements connected
-                </div>
-                <div style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 12 }}>
-                  This scan has no requirements source, so there is nothing to trace code and tests against.
-                  Connect Jira or upload a requirements file to enable traceability. Code, tests and risk
-                  analysis below still run against the repository.
-                </div>
-                <button onClick={() => setScanModalOpen(true)} style={{
-                  padding: '8px 16px', borderRadius: 9, cursor: 'pointer', fontFamily: 'inherit',
-                  fontSize: '0.82rem', fontWeight: 600, color: '#fff', border: 'none',
-                  background: 'var(--accent)',
-                }}>
-                  Connect Jira or upload requirements
-                </button>
-              </div>
-            </div>
-          )}
+        <div style={{ flex: 1, padding: '24px 32px' }}>
+
           {view === 'dashboard' && regressionsData?.regressions?.length > 0 && (
             <button onClick={() => navigate('/app/regressions')} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16,
@@ -576,6 +535,17 @@ function App() {
 
           {view === 'dashboard' && role !== 'ba' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeIn 0.35s ease-out' }}>
+              <div style={{ marginBottom: 8 }}>
+                <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>
+                  {role === 'dev' ? <Terminal size={26} color="#3B82F6" /> : <ShieldCheck size={26} color="#F59E0B" />}
+                  {role === 'dev' ? 'Developer Workspace' : 'QA Engineer Workspace'} <span style={{ fontWeight: 'normal' }}>👋</span>
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                  {role === 'dev' 
+                    ? 'Track code traceability, detect orphan blocks, and monitor technical debt.'
+                    : 'Analyze test coverage, detect dead tests, and ensure software reliability.'}
+                </p>
+              </div>
               <StatCards kpis={kpis} metrics={backendMetrics} history={history} />
               <div className="dashboard-grid-2">
                 <TraceabilityMap requirements={requirements} onSelect={setSelectedRequirement} />
@@ -642,20 +612,21 @@ function App() {
             <RegressionsView data={regressionsData} requirements={requirements}
               onSetBaseline={setBaseline} onScan={() => setScanModalOpen(true)} />
           )}
+
+          {view === 'docs' && (
+            <DocsPage onBack={() => navigate('/app/dashboard')} onLaunch={() => navigate('/app/dashboard')} />
+          )}
         </div>
       </main>
 
-      {/* AI Insights - Right Sidebar */}
-      {aiPanelOpen && (
-        <div className="ai-panel-container">
-          <AIInsightsSidebar
-            aiInsights={aiInsights}
-            overallHealthScore={healthScore}
-            onClose={() => setAiPanelOpen(false)}
-            askAI={askAI}
-          />
-        </div>
-      )}
+      {/* AI Insights - Floating Chatbot */}
+      <AIInsightsSidebar
+        aiInsights={aiInsights}
+        overallHealthScore={healthScore}
+        isOpen={aiPanelOpen}
+        onToggle={() => setAiPanelOpen(o => !o)}
+        askAI={askAI}
+      />
 
       {/* Scan modal */}
       <ScanModal open={scanModalOpen} jiraOpen={scanJiraOpen} onClose={() => setScanModalOpen(false)} onSubmit={handleScanStart} />

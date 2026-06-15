@@ -13,4 +13,9 @@ export default defineConfig({
     outDir: '../engine/web',
     emptyOutDir: true,
   },
+  server: {
+    allowedHosts: [
+      'daytime-supper-upheaval.ngrok-free.dev'
+    ]
+  }
 })
