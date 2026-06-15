@@ -6,9 +6,12 @@ export interface JiraConfig { url: string; email: string; token: string; jql: st
 interface InputSectionProps {
   onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string) => void;
   initialJiraOpen?: boolean;
+  // Real, per-session last-scan summary. Undefined until this session has run a
+  // scan — the status bar stays hidden rather than showing placeholder values.
+  lastScan?: { whenLabel?: string; requirements: number; branch?: string };
 }
 
-export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJiraOpen }) => {
+export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJiraOpen, lastScan }) => {
   const [repoUrl, setRepoUrl] = useState('');
   const [branch, setBranch] = useState('main');
   const [zipFile, setZipFile] = useState<File | null>(null);
@@ -204,25 +207,26 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
         )}
       </div>
 
-      {/* Status Bar */}
-      <div style={{
-        marginTop: '1.25rem',
-        paddingTop: '1.125rem',
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-        display: 'flex', gap: '1.5rem', flexWrap: 'wrap',
-      }}>
-        {[
-          { text: 'Last scanned 2h ago', color: '#34d399' },
-          { text: 'Commit: a4f3b91', color: '#818cf8', mono: true },
-          { text: '12 requirements loaded', color: '#34d399' },
-          { text: 'Branch: main', color: '#60a5fa' },
-        ].map(({ text, color, mono }) => (
-          <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
-            <CheckCircle2 size={12} color={color} />
-            <span style={{ fontFamily: mono ? 'JetBrains Mono, monospace' : 'inherit' }}>{text}</span>
-          </div>
-        ))}
-      </div>
+      {/* Status Bar — real per-session summary, shown only after a scan exists. */}
+      {lastScan && (
+        <div style={{
+          marginTop: '1.25rem',
+          paddingTop: '1.125rem',
+          borderTop: '1px solid rgba(255,255,255,0.05)',
+          display: 'flex', gap: '1.5rem', flexWrap: 'wrap',
+        }}>
+          {[
+            ...(lastScan.whenLabel ? [{ text: `Last scanned ${lastScan.whenLabel}`, color: '#34d399' }] : []),
+            { text: `${lastScan.requirements} requirements loaded`, color: '#34d399' },
+            ...(lastScan.branch ? [{ text: `Branch: ${lastScan.branch}`, color: '#60a5fa' }] : []),
+          ].map(({ text, color }) => (
+            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
+              <CheckCircle2 size={12} color={color} />
+              <span>{text}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
