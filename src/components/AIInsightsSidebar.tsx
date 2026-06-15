@@ -11,7 +11,7 @@ interface AIInsightsSidebarProps {
 
 export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights, overallHealthScore = 0, isOpen, onToggle, askAI }) => {
   const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState<{ text: string; error: boolean } | null>(null);
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'ai'; text: string; error?: boolean }>>([]);
   const [asking, setAsking] = useState(false);
   const [pos, setPos] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 140 });
   const isDragging = useRef(false);
@@ -66,9 +66,10 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
     const q = question.trim();
     if (!q || !askAI || asking) return;
     setAsking(true);
-    setAnswer(null);
+    setQuestion('');
+    setMessages(prev => [...prev, { role: 'user', text: q }]);
     const res = await askAI(q);
-    setAnswer({ text: res.ok ? (res.answer || '') : (res.error || 'No answer.'), error: !res.ok });
+    setMessages(prev => [...prev, { role: 'ai', text: res.ok ? (res.answer || '') : (res.error || 'No answer.'), error: !res.ok }]);
     setAsking(false);
   };
 
@@ -187,6 +188,72 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
               </div>
             </div>
           </div> {/* End Scrollable Area */}
+
+          {/* Ask AI Input & Conversation - Fixed at Bottom */}
+          <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            
+            {/* Conversation History */}
+            {(messages.length > 0 || asking) && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: 200, overflowY: 'auto', paddingRight: '0.25rem' }}>
+                {messages.map((msg, i) => (
+                  <div key={i} style={{
+                    alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                    maxWidth: '85%',
+                    padding: '0.625rem 0.875rem',
+                    borderRadius: 12,
+                    borderBottomRightRadius: msg.role === 'user' ? 4 : 12,
+                    borderTopLeftRadius: msg.role === 'ai' ? 4 : 12,
+                    background: msg.role === 'user' ? 'rgba(124,92,255,0.2)' : (msg.error ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)'),
+                    border: `1px solid ${msg.role === 'user' ? 'rgba(124,92,255,0.3)' : (msg.error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)')}`
+                  }}>
+                    <div style={{ fontSize: '0.8125rem', color: msg.error ? '#fca5a5' : '#e0e7ff', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {asking && (
+                  <div style={{ alignSelf: 'flex-start', maxWidth: '85%', padding: '0.625rem 0.875rem', borderRadius: 12, borderTopLeftRadius: 4, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a5b4fc', fontSize: '0.8125rem' }}>
+                      <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Thinking...
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
+              <textarea
+                value={question}
+                onChange={e => setQuestion(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitAsk();
+                  }
+                }}
+                placeholder="Ask AI about issues..."
+                style={{
+                  flex: 1, minHeight: 40, maxHeight: 120, resize: 'none',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 8, padding: '0.5rem 0.75rem',
+                  color: '#fff', fontSize: '0.8125rem', fontFamily: 'inherit',
+                  outline: 'none', overflowY: 'auto'
+                }}
+              />
+              <button
+                onClick={submitAsk}
+                disabled={asking || !question.trim()}
+                style={{
+                  width: 40, height: 40, borderRadius: 8, flexShrink: 0,
+                  background: (asking || !question.trim()) ? 'rgba(255,255,255,0.05)' : 'var(--accent)',
+                  border: 'none', color: (asking || !question.trim()) ? 'rgba(255,255,255,0.3)' : '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (asking || !question.trim()) ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s'
+                }}
+              >
+                <Send size={16} />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
