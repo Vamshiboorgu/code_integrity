@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, Target, FlaskConical, Boxes, GitMerge, TrendingUp, TrendingDown } from 'lucide-react';
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface StatCardsProps {
   kpis?: any;
@@ -7,33 +8,44 @@ interface StatCardsProps {
   history?: any[];
 }
 
-// Lightweight real-data sparkline (no chart lib).
+// Lightweight real-data sparkline using Recharts to support tooltips.
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
   if (!data || data.length < 2) {
     return <div style={{ height: 34 }} />;
   }
-  const w = 120, h = 34, pad = 3;
-  const min = Math.min(...data), max = Math.max(...data);
-  const span = max - min || 1;
-  const pts = data.map((v, i) => {
-    const x = pad + (i / (data.length - 1)) * (w - 2 * pad);
-    const y = pad + (1 - (v - min) / span) * (h - 2 * pad);
-    return [x, y];
-  });
-  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
-  const area = `${line} L${pts[pts.length - 1][0].toFixed(1)},${h} L${pts[0][0].toFixed(1)},${h} Z`;
+  const chartData = data.map((v, i) => ({ value: v, index: i }));
   const gid = 'spark' + color.replace(/[^a-z0-9]/gi, '');
   return (
-    <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.28" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#${gid})`} />
-      <path d={line} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div style={{ width: '100%', height: 34 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <Tooltip 
+            position={{ y: -20 }}
+            contentStyle={{ background: '#14152A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, fontSize: 12, padding: '4px 8px' }} 
+            itemStyle={{ color: 'rgba(255,255,255,0.85)' }} 
+            cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }}
+            labelStyle={{ display: 'none' }}
+            formatter={(val: number) => [val, 'Value']}
+          />
+          <Area 
+            type="monotone" 
+            dataKey="value" 
+            stroke={color} 
+            fillOpacity={1} 
+            fill={`url(#${gid})`} 
+            strokeWidth={1.8} 
+            isAnimationActive={false}
+            activeDot={{ r: 4, fill: '#fff', stroke: color, strokeWidth: 2 }}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 

@@ -64,7 +64,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-const API_BASE = 'https://workers-handy-albany-bumper.trycloudflare.com';
+const API_BASE = 'https://ratios-adrian-institutional-holds.trycloudflare.com';
 
 function App() {
   const _init = parseHash();
