@@ -65,7 +65,7 @@ export const DocsPage: React.FC<DocsPageProps> = ({ onBack, onLaunch }) => {
               Requirements → Code → Tests, fully traced.
             </h1>
             <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 640 }}>
-              CodeTrace is a precision traceability engine. It links every requirement to the code that
+              IB Code Trace is a precision traceability engine. It links every requirement to the code that
               implements it and the tests that verify it, then flags the gaps — orphan code, unimplemented
               requirements, dead tests — and ranks security &amp; performance risk. Deterministic by design,
               with optional local AI. No data leaves your machine.

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Code2, BarChart3, ShieldCheck, Shield } from 'lucide-react';
+import { CustomLogo } from './CustomLogo';
 
 interface RoleSelectionProps {
   onSelect: (role: 'dev' | 'ba' | 'qa') => void;
@@ -30,10 +31,10 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelect }) => {
             boxShadow: '0 4px 20px rgba(0, 123, 255,0.4)',
             border: '1px solid rgba(255,255,255,0.2)'
           }}>
-            <Shield size={24} color="#fff" strokeWidth={2.5} />
+            <CustomLogo size={24} color="#fff" />
           </div>
           <div style={{ textAlign: 'left' }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>CodeTrace</h1>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>IB Code Trace</h1>
             <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 600, marginTop: 4 }}>Integrity Engine</p>
           </div>
         </div>

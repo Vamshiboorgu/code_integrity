@@ -31,6 +31,7 @@ import { TeamView } from './components/TeamView';
 import { RegressionsView } from './components/RegressionsView';
 import { Requirement, SecurityRisk, PerformanceRisk, OrphanCode, DeadTest } from './data/mockData';
 import { CheckCircle2, AlertCircle, Loader2, Terminal, ShieldCheck, Shield, Brain, Sparkles, Cpu, Bot } from 'lucide-react';
+import { CustomLogo } from './components/CustomLogo';
 
 type Tab = 'overview' | 'traceability' | 'drift' | 'security' | 'performance';
 
@@ -591,7 +592,7 @@ function App() {
         {/* Brand header */}
         <div style={{ zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
           <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #007BFF 0%, #0055FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0, 123, 255,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
-            <Shield size={24} color="#fff" strokeWidth={2.5} />
+            <CustomLogo size={24} color="#fff" />
           </div>
           <div style={{ textAlign: 'left' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '0.013em', lineHeight: 1 }}>IB Code Trace</h1>

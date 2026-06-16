@@ -1,5 +1,6 @@
 import React from 'react';
 import { LayoutDashboard, FileText, Network, TestTube2, ShieldAlert, AlertTriangle, FileBarChart, Sparkles, Settings, Plug, ScrollText, Users, GitCompare, ChevronRight, BookOpen } from 'lucide-react';
+import { CustomLogo } from './CustomLogo';
 
 const ROLE_META = {
   ba:  { label: 'Business Analyst', short: 'BA',  color: '#007BFF', tint: 'rgba(0, 123, 255,0.18)', text: '#a5f3fc' },
@@ -74,10 +75,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 0 20px rgba(79,70,229,0.4)', border: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <Network size={16} color="#fff" />
+          <CustomLogo size={16} color="#fff" />
         </div>
         <div>
-          <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.2 }}>CodeTrace</div>
+          <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.2 }}>IB Code Trace</div>
           <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Integrity Engine</div>
         </div>
       </div>
