@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Bell, Loader2, Sparkles, ScanLine, FileText, X } from 'lucide-react';
+import { Search, Bell, Loader2, Sparkles, ScanLine, FileText, X, ChevronDown } from 'lucide-react';
 import { Requirement } from '../data/mockData';
 import { TypeBadge } from './TypeBadge';
 
@@ -12,6 +12,7 @@ interface TopBarProps {
   branch?: string;
   requirements?: Requirement[];
   onSelectResult?: (req: Requirement) => void;
+  onSwitchRole?: (role: 'dev' | 'ba' | 'qa') => void;
 }
 
 const ROLE_META = {
@@ -22,10 +23,11 @@ const ROLE_META = {
 
 const statusColor = (s: string) => (s === 'complete' ? '#22C55E' : s === 'partial' ? '#F59E0B' : '#F43F5E');
 
-export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunScan, role, repo, branch, requirements, onSelectResult }) => {
+export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunScan, role, repo, branch, requirements, onSelectResult, onSwitchRole }) => {
   const rm = ROLE_META[role];
   const [q, setQ] = useState('');
   const [focused, setFocused] = useState(false);
+  const [roleMenu, setRoleMenu] = useState(false);
 
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -48,7 +50,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
       position: 'sticky', top: 0, zIndex: 30,
     }}>
       {/* Left: Project + Branch context */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontSize: '0.625rem', color: 'var(--text-muted)' }}>Project</span>
           <span style={{ fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace" }}>{repo || '—'}</span>
@@ -123,7 +125,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
       </div>
 
       {/* Right cluster */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, flexShrink: 0, flex: 1 }}>
         {isScanning && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 999,
@@ -145,7 +147,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
         }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
-          Check another repo
+          Review Another Repo
         </button>
 
         <button style={{
@@ -156,6 +158,60 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
           <Bell size={17} />
           <span style={{ position: 'absolute', top: 9, right: 10, width: 7, height: 7, borderRadius: '50%', background: 'var(--danger)', border: '2px solid var(--bg-surface)' }} />
         </button>
+
+        {/* Role Switcher */}
+        <div style={{ position: 'relative' }}>
+          <div onClick={() => setRoleMenu(o => !o)} style={{
+            height: 42, padding: '0 12px 0 6px', borderRadius: 12,
+            border: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex', alignItems: 'center', gap: '0.75rem',
+            background: roleMenu ? 'rgba(255,255,255,0.08)' : `linear-gradient(90deg, ${rm.tint} 0%, rgba(255,255,255,0.02) 100%)`,
+            cursor: 'pointer', transition: 'all 0.15s'
+          }}>
+            <div style={{
+              width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+              background: rm.tint, border: `1px solid ${rm.color}40`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.625rem', fontWeight: 800, color: rm.text,
+              boxShadow: `0 0 12px ${rm.color}30`,
+            }}>{rm.short}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 60 }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{rm.label}</div>
+            </div>
+            <ChevronDown size={13} color="rgba(255,255,255,0.4)" style={{ transform: roleMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+          </div>
+
+          {roleMenu && (
+            <>
+              <div onClick={() => setRoleMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 50, minWidth: 180,
+                background: '#1A1D24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
+                boxShadow: '0 4px 24px rgba(0,0,0,0.5)', padding: 6,
+              }}>
+                <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '6px 10px 4px' }}>Switch workspace</div>
+                {(['ba', 'dev', 'qa'] as const).map(r => {
+                  const m = ROLE_META[r];
+                  const active = r === role;
+                  return (
+                    <button key={r} onClick={() => { setRoleMenu(false); if (!active) onSwitchRole?.(r); }} style={{
+                      display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left',
+                      padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                      background: active ? m.tint : 'transparent',
+                      transition: 'background 0.12s',
+                    }}
+                      onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                      onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}>
+                      <div style={{ width: 22, height: 22, borderRadius: 6, background: m.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 700, color: m.text }}>{m.short}</div>
+                      <span style={{ flex: 1, fontSize: '0.8rem', color: '#fff', fontWeight: active ? 600 : 400 }}>{m.label}</span>
+                      {active && <span style={{ width: 6, height: 6, borderRadius: '50%', background: m.color }} />}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

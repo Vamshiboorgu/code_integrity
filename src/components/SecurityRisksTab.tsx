@@ -91,7 +91,7 @@ export const SecurityRisksTab: React.FC<SecurityRisksTabProps> = ({ securityRisk
       <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '1.25rem' }}>
 
         {/* Left: severity cards + pie */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', width: 180 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', width: 220 }}>
           {(['high', 'medium', 'low'] as const).map(sev => {
             const cfg = SEV_CONFIG[sev];
             const Icon = cfg.icon;
@@ -149,6 +149,7 @@ export const SecurityRisksTab: React.FC<SecurityRisksTabProps> = ({ securityRisk
             border: '1px solid var(--border-default)',
             borderRadius: 14, overflow: 'hidden',
             position: 'relative',
+            flex: 1, display: 'flex', flexDirection: 'column',
           }}>
             {/* Top accent line */}
             <div style={{
@@ -177,7 +178,7 @@ export const SecurityRisksTab: React.FC<SecurityRisksTabProps> = ({ securityRisk
             </div>
 
             {filtered.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                 No data available. Run a scan to view results.
               </div>
             ) : (

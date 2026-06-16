@@ -6,9 +6,11 @@ export interface JiraConfig { url: string; email: string; token: string; jql: st
 interface InputSectionProps {
   onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string) => void;
   initialJiraOpen?: boolean;
-  // Real, per-session last-scan summary. Undefined until this session has run a
-  // scan — the status bar stays hidden rather than showing placeholder values.
-  lastScan?: { whenLabel?: string; requirements: number; branch?: string };
+  lastScan?: {
+    whenLabel?: string;
+    requirements: number;
+    branch?: string;
+  };
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJiraOpen, lastScan }) => {
@@ -119,7 +121,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
               value={repoUrl} onChange={e => setRepoUrl(e.target.value)}
               placeholder="https://github.com/org/repo.git"
               className="input mono"
-              style={{ paddingLeft: 32, fontSize: '0.8rem' }}
+              style={{ paddingLeft: 32, fontSize: '0.8rem', height: 50, width: '100%' }}
             />
           </div>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Public repo URL — GitHub, GitLab, Bitbucket. Any language.</p>
@@ -151,60 +153,70 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
 
       </div>
 
-      {/* CTA */}
-      <div style={{ marginTop: '1.5rem' }}>
-        <button
-          onClick={handleSubmit}
-          className="btn btn-primary"
-          style={{ width: '100%', justifyContent: 'center', padding: '0.75rem' }}
-        >
-          Analyze Repository
-          <ChevronRight size={14} />
-        </button>
-      </div>
-
       {/* Jira connector */}
-      <div style={{ marginTop: '1.25rem' }}>
+      <div style={{ marginTop: '1.5rem', width: '100%' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
+          <Plug size={11} /> Jira Integration
+        </label>
         <button
           onClick={() => setJiraOpen(o => !o)}
           style={{
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(124,92,255,0.08)', border: '1px solid rgba(124,92,255,0.22)',
-            borderRadius: 10, padding: '0.5rem 0.875rem', cursor: 'pointer', fontFamily: 'inherit',
-            color: '#b9a8ff', fontSize: '0.8125rem', fontWeight: 600,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: 50,
+            background: jiraOpen ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)',
+            border: `1px ${jiraOpen ? 'solid' : 'dashed'} ${jiraOpen ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.1)'}`,
+            borderRadius: 10, padding: '0 1rem', cursor: 'pointer', fontFamily: 'inherit',
+            color: jiraOpen ? '#c4b5fd' : 'rgba(255,255,255,0.5)', fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s',
           }}
+          onMouseEnter={e => e.currentTarget.style.background = jiraOpen ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.04)'}
+          onMouseLeave={e => e.currentTarget.style.background = jiraOpen ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)'}
         >
-          <Plug size={14} /> Pull requirements from Jira {buildJira() ? '· configured' : '(optional)'}
-          <ChevronRight size={13} style={{ transform: jiraOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <Plug size={16} color={jiraOpen ? "#a78bfa" : "rgba(255,255,255,0.4)"} />
+            <span>{buildJira() ? <span style={{ color: '#10b981', fontWeight: 600 }}>Jira Configured</span> : <span style={{ color: 'rgba(255,255,255,0.3)' }}>Connect to Jira (optional)</span>}</span>
+          </div>
+          <ChevronRight size={16} style={{ transform: jiraOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s ease-in-out', color: 'rgba(255,255,255,0.3)' }} />
         </button>
 
         {jiraOpen && (
           <div style={{
-            marginTop: '0.875rem', padding: '1rem',
+            marginTop: '0.875rem', padding: '1.25rem',
             background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12,
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem',
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem',
+            animation: 'fadeIn 0.2s ease-out'
           }}>
             <div>
               <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Jira URL</label>
-              <input value={jiraUrl} onChange={e => setJiraUrl(e.target.value)} placeholder="https://company.atlassian.net" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+              <input value={jiraUrl} onChange={e => setJiraUrl(e.target.value)} placeholder="https://company.atlassian.net" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem', width: '100%' }} />
             </div>
             <div>
               <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Email</label>
-              <input value={jiraEmail} onChange={e => setJiraEmail(e.target.value)} placeholder="you@company.com" className="input" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+              <input value={jiraEmail} onChange={e => setJiraEmail(e.target.value)} placeholder="you@company.com" className="input" style={{ marginTop: 6, fontSize: '0.78rem', width: '100%' }} />
             </div>
             <div>
               <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>API Token</label>
-              <input type="password" autoComplete="off" value={jiraToken} onChange={e => setJiraToken(e.target.value)} placeholder="Atlassian API token" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+              <input type="password" autoComplete="off" value={jiraToken} onChange={e => setJiraToken(e.target.value)} placeholder="Atlassian API token" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem', width: '100%' }} />
             </div>
             <div>
               <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>JQL (optional)</label>
-              <input value={jiraJql} onChange={e => setJiraJql(e.target.value)} placeholder="project = ABC AND issuetype = Story" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem' }} />
+              <input value={jiraJql} onChange={e => setJiraJql(e.target.value)} placeholder="project = ABC AND issuetype = Story" className="input mono" style={{ marginTop: 6, fontSize: '0.78rem', width: '100%' }} />
             </div>
             <p style={{ gridColumn: '1 / -1', fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
               When set, requirements are pulled live from Jira instead of a file. Token is sent only to your engine, never stored. Create one at id.atlassian.com/manage/api-tokens.
             </p>
           </div>
         )}
+      </div>
+
+      {/* CTA */}
+      <div style={{ marginTop: '1.5rem' }}>
+        <button
+          onClick={handleSubmit}
+          className="btn btn-primary"
+          style={{ width: '100%', justifyContent: 'center', padding: '0.875rem', fontSize: '0.95rem' }}
+        >
+          Analyze Repository
+          <ChevronRight size={16} />
+        </button>
       </div>
 
       {/* Status Bar — real per-session summary, shown only after a scan exists. */}

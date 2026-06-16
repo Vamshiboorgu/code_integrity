@@ -63,9 +63,9 @@ export const PerformanceRisksTab: React.FC<PerformanceRisksTabProps> = ({ perfor
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
         
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', padding: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', padding: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: '1rem' }}>
             <TrendingUp size={16} color="#fbbf24" />
             <span className="section-title">Issue Type Distribution</span>
@@ -86,13 +86,17 @@ export const PerformanceRisksTab: React.FC<PerformanceRisksTabProps> = ({ perfor
           </ResponsiveContainer>
         </div>
 
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', padding: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--bg-surface)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-sm)', borderRadius: 'var(--r-xl)', padding: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: '1rem' }}>
             <AlertTriangle size={16} color="#ef4444" />
             <span className="section-title">Critical Issues Requiring Action</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {highRisks.map((risk) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+            {highRisks.length === 0 ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                No critical issues found.
+              </div>
+            ) : highRisks.map((risk) => (
               <div key={risk.id} style={{
                 padding: '0.875rem', borderRadius: 12,
                 background: 'rgba(239,68,68,0.05)',

@@ -12,12 +12,9 @@ interface SidebarProps {
   onTabChange: (tab: string) => void;
   lastScanTime?: string;
   role?: 'dev' | 'ba' | 'qa';
-  onSwitchRole?: (role: 'dev' | 'ba' | 'qa') => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastScanTime, role = 'dev', onSwitchRole }) => {
-  const rm = ROLE_META[role];
-  const [roleMenu, setRoleMenu] = React.useState(false);
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastScanTime }) => {
   const mainNav = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'requirements', label: 'Requirements', icon: FileText },
@@ -106,60 +103,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
         </div>
       </div>
 
-      {/* Profile footer / Role Switcher */}
-      <div style={{ position: 'relative' }}>
-        <div onClick={() => setRoleMenu(o => !o)} style={{
-          padding: '0.875rem 1rem',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-          display: 'flex', alignItems: 'center', gap: '0.75rem',
-          background: roleMenu ? 'rgba(255,255,255,0.04)' : `linear-gradient(90deg, ${rm.tint} 0%, transparent 100%)`,
-          cursor: 'pointer', transition: 'all 0.15s'
-        }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-            background: rm.tint, border: `1px solid ${rm.color}40`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '0.6875rem', fontWeight: 800, color: rm.text,
-            boxShadow: `0 0 12px ${rm.color}30`,
-          }}>{rm.short}</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rm.label}</div>
-            <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>Workspace</div>
-          </div>
-          <ChevronRight size={13} color="rgba(255,255,255,0.2)" style={{ transform: roleMenu ? 'rotate(-90deg)' : 'none', transition: 'transform 0.15s' }} />
-        </div>
-
-        {roleMenu && (
-          <>
-            <div onClick={() => setRoleMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
-            <div style={{
-              position: 'absolute', bottom: 'calc(100% + 6px)', left: 16, right: 16, zIndex: 50,
-              background: '#1A1D24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
-              boxShadow: '0 4px 24px rgba(0,0,0,0.5)', padding: 6,
-            }}>
-              <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '6px 10px 4px' }}>Switch workspace</div>
-              {(['ba', 'dev', 'qa'] as const).map(r => {
-                const m = ROLE_META[r];
-                const active = r === role;
-                return (
-                  <button key={r} onClick={() => { setRoleMenu(false); if (!active) onSwitchRole?.(r); }} style={{
-                    display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left',
-                    padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                    background: active ? m.tint : 'transparent',
-                    transition: 'background 0.12s',
-                  }}
-                    onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-                    onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 6, background: m.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 700, color: m.text }}>{m.short}</div>
-                    <span style={{ flex: 1, fontSize: '0.8rem', color: '#fff', fontWeight: active ? 600 : 400 }}>{m.label}</span>
-                    {active && <span style={{ width: 6, height: 6, borderRadius: '50%', background: m.color }} />}
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
     </div>
   );
 };

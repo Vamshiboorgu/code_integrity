@@ -152,6 +152,7 @@ export const BADashboard: React.FC<BADashboardProps> = ({ requirements, kpis, hi
                   <Pie data={donutData} innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
                     {donutData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                   </Pie>
+                  <Tooltip contentStyle={{ background: '#0f1824', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, fontSize: 12, color: 'rgba(255,255,255,0.85)' }} itemStyle={{ color: 'rgba(255,255,255,0.85)' }} />
                 </PieChart>
               </ResponsiveContainer>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>

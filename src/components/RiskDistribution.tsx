@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { PieChart as PieIcon } from 'lucide-react';
 
 interface Props { securityRisks?: any[]; performanceRisks?: any[]; }
@@ -37,6 +37,7 @@ export const RiskDistribution: React.FC<Props> = ({ securityRisks, performanceRi
               <Pie data={chartData} cx="50%" cy="50%" innerRadius={52} outerRadius={72} paddingAngle={data.length > 1 ? 3 : 0} dataKey="value" stroke="none" cornerRadius={4}>
                 {chartData.map((d, i) => <Cell key={i} fill={d.color} />)}
               </Pie>
+              <Tooltip contentStyle={{ background: '#0f1824', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, fontSize: 12, color: 'rgba(255,255,255,0.85)' }} itemStyle={{ color: 'rgba(255,255,255,0.85)' }} />
             </PieChart>
           </ResponsiveContainer>
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>

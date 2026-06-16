@@ -105,7 +105,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
           position: 'absolute',
           ...(isBottomHalf ? { bottom: '100%', marginBottom: 16 } : { top: '100%', marginTop: 16 }),
           ...(isRightHalf ? { right: 0 } : { left: 0 }),
-          width: 360,
+          width: 420,
           height: 700,
           maxHeight: '90vh',
           background: 'linear-gradient(180deg, rgba(20,22,35,0.97) 0%, rgba(15,18,25,0.98) 100%)',
@@ -206,7 +206,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
                     background: msg.role === 'user' ? 'rgba(124,92,255,0.2)' : (msg.error ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)'),
                     border: `1px solid ${msg.role === 'user' ? 'rgba(124,92,255,0.3)' : (msg.error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)')}`
                   }}>
-                    <div style={{ fontSize: '0.8125rem', color: msg.error ? '#fca5a5' : '#e0e7ff', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                    <div style={{ fontSize: '0.8125rem', color: msg.error ? '#fca5a5' : '#e0e7ff', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                       {msg.text}
                     </div>
                   </div>

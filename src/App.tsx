@@ -19,6 +19,7 @@ import { InputSection } from './components/InputSection';
 import { BADashboard } from './components/BADashboard';
 import { ScanModal } from './components/ScanModal';
 import { ScanProgress } from './components/ScanProgress';
+import { ParticlesBackground } from './components/ParticlesBackground';
 import { DocsPage } from './components/DocsPage';
 import { CodeMapView } from './components/CodeMapView';
 import { TestsView } from './components/TestsView';
@@ -73,7 +74,7 @@ function App() {
   const [postgresEnabled, setPostgresEnabled] = useState(false);
   const [regressionsData, setRegressionsData] = useState<any>(null);
   const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null);
-  const [aiPanelOpen, setAiPanelOpen] = useState(true);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const [scanModalOpen, setScanModalOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
@@ -489,7 +490,7 @@ function App() {
   const askAI = useCallback(async (question: string): Promise<{ ok: boolean; answer?: string; error?: string }> => {
     try {
       const res = await fetch(`${API_BASE}/api/ask`, {
-        method: 'POST', 
+        method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
@@ -530,6 +531,7 @@ function App() {
         background: 'var(--bg-base)', position: 'relative', overflow: 'hidden',
         padding: '2rem 1rem',
       }}>
+        <ParticlesBackground />
         {/* Background decoration (matches the app's visual language) */}
         <div style={{ position: 'absolute', top: -200, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: 'radial-gradient(circle, rgba(124,92,255,0.08) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -200, right: -200, width: 800, height: 800, background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
@@ -543,6 +545,17 @@ function App() {
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>CodeTrace</h1>
             <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 600, marginTop: 4 }}>Integrity Engine</p>
           </div>
+        </div>
+
+        {/* Hero Section */}
+        <div style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3rem', marginTop: '1rem', maxWidth: 1000 }}>
+          <h2 style={{ fontSize: '3rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '1.25rem' }}>
+            Code That Ships <span style={{ color: '#A78BFA' }}>With Confidence</span>
+          </h2>
+
+          <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, margin: 0, fontWeight: 400 }}>
+            Scan Any Repo Against Your Requirements. Catch Drift Before It Ships. Built For Teams That Care About Traceability.
+          </p>
         </div>
 
         {/* Analysis Configuration form (runs the scan, then enters the dashboard) */}
@@ -581,7 +594,6 @@ function App() {
         }}
         lastScanTime={lastScanLabel}
         role={role ?? 'dev'}
-        onSwitchRole={(r) => { setRole(r); navigate('/app/dashboard'); }}
       />
 
       {/* Main Content */}
@@ -595,9 +607,10 @@ function App() {
           branch={backendMetrics?.branch}
           requirements={requirements}
           onSelectResult={setSelectedRequirement}
+          onSwitchRole={(r) => { setRole(r); navigate('/app/dashboard'); }}
         />
 
-        <div style={{ flex: 1, padding: '24px 32px' }}>
+        <div style={{ flex: 1, padding: '24px 32px', paddingLeft: '42px' }}>
 
           {view === 'dashboard' && regressionsData?.regressions?.length > 0 && (
             <button onClick={() => navigate('/app/regressions')} style={{
@@ -625,7 +638,7 @@ function App() {
                   {role === 'dev' ? 'Developer Workspace' : 'QA Engineer Workspace'} <span style={{ fontWeight: 'normal' }}>👋</span>
                 </h2>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                  {role === 'dev' 
+                  {role === 'dev'
                     ? 'Track code traceability, detect orphan blocks, and monitor technical debt.'
                     : 'Analyze test coverage, detect dead tests, and ensure software reliability.'}
                 </p>
