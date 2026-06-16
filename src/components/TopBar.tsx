@@ -16,7 +16,7 @@ interface TopBarProps {
 }
 
 const ROLE_META = {
-  ba: { label: 'Business Analyst', short: 'BA', color: '#7C5CFF', tint: 'rgba(124,92,255,0.2)', text: '#a5b4fc' },
+  ba: { label: 'Business Analyst', short: 'BA', color: '#007BFF', tint: 'rgba(0, 123, 255,0.2)', text: '#a5f3fc' },
   dev: { label: 'Developer', short: 'DEV', color: '#3B82F6', tint: 'rgba(59,130,246,0.2)', text: '#93c5fd' },
   qa: { label: 'QA Engineer', short: 'QA', color: '#F59E0B', tint: 'rgba(245,158,11,0.2)', text: '#fcd34d' },
 };
@@ -129,7 +129,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
         {isScanning && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 999,
-            background: 'rgba(124,92,255,0.1)', border: '1px solid rgba(124,92,255,0.25)',
+            background: 'rgba(0, 123, 255,0.1)', border: '1px solid rgba(0, 123, 255,0.25)',
             maxWidth: 240,
           }}>
             <Loader2 size={13} color="var(--accent-2)" style={{ animation: 'spin 0.8s linear infinite' }} />

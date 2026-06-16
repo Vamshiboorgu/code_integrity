@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutDashboard, FileText, Network, TestTube2, ShieldAlert, AlertTriangle, FileBarChart, Sparkles, Settings, Plug, ScrollText, Users, GitCompare, ChevronRight, BookOpen } from 'lucide-react';
 
 const ROLE_META = {
-  ba:  { label: 'Business Analyst', short: 'BA',  color: '#7C5CFF', tint: 'rgba(124,92,255,0.18)', text: '#a5b4fc' },
+  ba:  { label: 'Business Analyst', short: 'BA',  color: '#007BFF', tint: 'rgba(0, 123, 255,0.18)', text: '#a5f3fc' },
   dev: { label: 'Developer',        short: 'DEV', color: '#3B82F6', tint: 'rgba(59,130,246,0.18)', text: '#93c5fd' },
   qa:  { label: 'QA Engineer',      short: 'QA',  color: '#F59E0B', tint: 'rgba(245,158,11,0.18)', text: '#fcd34d' },
 };

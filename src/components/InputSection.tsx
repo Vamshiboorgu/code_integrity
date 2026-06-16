@@ -145,7 +145,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
           >
             <input type="file" style={{ display: 'none' }} accept=".xlsx,.csv,.json" onChange={handleReqChange} />
             {reqFile
-              ? <><CheckCircle2 size={14} color="#a78bfa" /> {reqFile.name}</>
+              ? <><CheckCircle2 size={14} color="#00D4FF" /> {reqFile.name}</>
               : <><FileText size={14} /> Drop .xlsx, .csv, .json</>}
           </label>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Excel, CSV, JSON, or JIRA export</p>
@@ -171,7 +171,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
           onMouseLeave={e => e.currentTarget.style.background = jiraOpen ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)'}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <Plug size={16} color={jiraOpen ? "#a78bfa" : "rgba(255,255,255,0.4)"} />
+            <Plug size={16} color={jiraOpen ? "#00D4FF" : "rgba(255,255,255,0.4)"} />
             <span>{buildJira() ? <span style={{ color: '#10b981', fontWeight: 600 }}>Jira Configured</span> : <span style={{ color: 'rgba(255,255,255,0.3)' }}>Connect to Jira (optional)</span>}</span>
           </div>
           <ChevronRight size={16} style={{ transform: jiraOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s ease-in-out', color: 'rgba(255,255,255,0.3)' }} />

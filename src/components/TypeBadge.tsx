@@ -4,7 +4,7 @@ export const TYPE_META: Record<string, { label: string; color: string }> = {
   EPIC:  { label: 'Epic',    color: '#A855F7' },
   FEAT:  { label: 'Feature', color: '#3B82F6' },
   STORY: { label: 'Story',   color: '#06B6D4' },
-  REQ:   { label: 'Req',     color: '#7C5CFF' },
+  REQ:   { label: 'Req',     color: '#007BFF' },
   NFR:   { label: 'NFR',     color: '#14B8A6' },
   BUG:   { label: 'Bug',     color: '#F43F5E' },
   TASK:  { label: 'Task',    color: '#F59E0B' },

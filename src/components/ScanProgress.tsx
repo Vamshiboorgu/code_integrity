@@ -92,7 +92,7 @@ export const ScanProgress: React.FC<Props> = ({ active, status, startMs }) => {
         }}>
           <div style={{
             height: '100%', width: `${pct}%`, borderRadius: 999,
-            background: 'linear-gradient(90deg, var(--accent), #a78bfa)',
+            background: 'linear-gradient(90deg, var(--accent), #00D4FF)',
             transition: 'width 0.5s cubic-bezier(0.16,1,0.3,1)',
           }} />
         </div>

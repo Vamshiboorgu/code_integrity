@@ -193,7 +193,7 @@ export const SignalFusionCard: React.FC<SignalFusionCardProps> = ({ metrics }) =
               label="LLM Adjudication"
               sub={llmActive ? llmModel : `${llmModel} · disabled`}
               weight={wLlm ?? 0}
-              color="#A78BFA"
+              color="#00D4FF"
               delay={550}
               inactive={!llmActive}
               inactiveNote="OFFLINE"

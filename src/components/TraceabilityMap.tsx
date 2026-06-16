@@ -138,7 +138,7 @@ export const TraceabilityMap: React.FC<Props> = ({ requirements, onSelect }) => 
     <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
       <div className="card-hd">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(124,92,255,0.14)', border: '1px solid rgba(124,92,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(0, 123, 255,0.14)', border: '1px solid rgba(0, 123, 255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Network size={16} color="var(--accent-2)" />
           </div>
           <div>

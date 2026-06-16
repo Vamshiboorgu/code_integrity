@@ -99,7 +99,7 @@ export const StatCards: React.FC<StatCardsProps> = ({ kpis, metrics, history }) 
   };
 
   const cards: OneCard[] = [
-    { label: 'Total Requirements', value: String(k.totalRequirements ?? '—'), icon: <BookOpen size={18} />, color: '#7C5CFF', series: series('requirements'), trend: trend('requirements') },
+    { label: 'Total Requirements', value: String(k.totalRequirements ?? '—'), icon: <BookOpen size={18} />, color: '#007BFF', series: series('requirements'), trend: trend('requirements') },
     { label: 'Coverage Rate', value: (k.traceabilityCoverage ?? 0) + '%', icon: <Target size={18} />, color: '#22C55E', series: series('coverage'), trend: trend('coverage') },
     { label: 'Linked Tests', value: String(k.linkedTests ?? '—'), icon: <FlaskConical size={18} />, color: '#06B6D4', series: series('linked'), trend: trend('linked') },
     { label: 'Code Blocks', value: String(counts.code_blocks ?? '—'), icon: <Boxes size={18} />, color: '#3B82F6', series: series('blocks'), trend: trend('blocks') },

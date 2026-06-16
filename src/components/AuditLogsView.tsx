@@ -48,7 +48,7 @@ export const AuditLogsView: React.FC<Props> = ({ history, repo }) => {
 export const ViewHeader: React.FC<{ icon: React.ReactNode; title: string; sub: string; right?: React.ReactNode }> = ({ icon, title, sub, right }) => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <div style={{ width: 38, height: 38, borderRadius: 11, background: 'rgba(124,92,255,0.14)', border: '1px solid rgba(124,92,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-2)' }}>{icon}</div>
+      <div style={{ width: 38, height: 38, borderRadius: 11, background: 'rgba(0, 123, 255,0.14)', border: '1px solid rgba(0, 123, 255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-2)' }}>{icon}</div>
       <div>
         <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', margin: 0 }}>{title}</h2>
         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>{sub}</p>

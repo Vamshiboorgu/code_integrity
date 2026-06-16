@@ -8,7 +8,7 @@ interface Props {
 }
 
 const ROLES = [
-  { id: 'ba', label: 'Business Analyst', icon: BarChart3, color: '#7C5CFF', desc: 'Tracks requirement coverage and business impact.' },
+  { id: 'ba', label: 'Business Analyst', icon: BarChart3, color: '#007BFF', desc: 'Tracks requirement coverage and business impact.' },
   { id: 'dev', label: 'Developer', icon: Code2, color: '#3B82F6', desc: 'Works traceability graphs, orphan code, and risk maps.' },
   { id: 'qa', label: 'QA Engineer', icon: ShieldCheck, color: '#F59E0B', desc: 'Owns dead-test detection and test traceability.' },
 ];
@@ -46,7 +46,7 @@ export const TeamView: React.FC<Props> = ({ role, onSwitchRole }) => (
       })}
     </div>
 
-    <div style={{ marginTop: 16, padding: '14px 18px', background: 'rgba(124,92,255,0.06)', border: '1px solid rgba(124,92,255,0.18)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 11, fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+    <div style={{ marginTop: 16, padding: '14px 18px', background: 'rgba(0, 123, 255,0.06)', border: '1px solid rgba(0, 123, 255,0.18)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 11, fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
       <Info size={17} color="var(--accent-2)" style={{ flexShrink: 0 }} />
       Roles are presentation workspaces — each gets a tailored dashboard, but they all analyze the same project and data. Switch any time from here or the top bar.
     </div>

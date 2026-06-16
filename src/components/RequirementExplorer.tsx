@@ -108,7 +108,7 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
               <div style={{ display: 'flex', alignItems: 'center', paddingTop: 28 }}><ChevronRight size={16} color="rgba(255,255,255,0.2)" /></div>
 
               <div style={{ flexShrink: 0, padding: '1rem', borderRadius: 12, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', minWidth: 180 }}>
-                <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <FileCode2 size={12} /> Code Files
                 </div>
                 {requirement.codeFiles.length === 0
@@ -164,7 +164,7 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
                     borderRadius: 10, background: 'rgba(255,255,255,0.03)',
                     border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', transition: 'all 0.15s',
                   }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.06)'; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)'; }}>
-                    <FileCode2 size={15} color="#a78bfa" style={{ flexShrink: 0 }} />
+                    <FileCode2 size={15} color="#00D4FF" style={{ flexShrink: 0 }} />
                     <code style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file}</code>
                     <ExternalLink size={13} color="rgba(255,255,255,0.3)" style={{ flexShrink: 0 }} />
                   </div>

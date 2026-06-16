@@ -110,9 +110,9 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
           maxHeight: '90vh',
           background: 'linear-gradient(180deg, rgba(20,22,35,0.97) 0%, rgba(15,18,25,0.98) 100%)',
           backdropFilter: 'blur(32px)',
-          border: '1px solid rgba(124,92,255,0.3)',
+          border: '1px solid rgba(0, 123, 255,0.3)',
           borderRadius: 16,
-          boxShadow: '0 30px 60px rgba(0,0,0,0.8), 0 0 30px rgba(124,92,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.8), 0 0 30px rgba(0, 123, 255,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -125,7 +125,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Sparkles size={16} color="var(--accent-2)" />
               <span style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#fff' }}>AI Insights</span>
-              <span style={{ marginLeft: 8, fontSize: '0.625rem', fontWeight: 800, background: 'rgba(124,92,255,0.15)', color: 'var(--accent-2)', padding: '0.15rem 0.4rem', borderRadius: 4, letterSpacing: '0.05em' }}>BETA</span>
+              <span style={{ marginLeft: 8, fontSize: '0.625rem', fontWeight: 800, background: 'rgba(0, 123, 255,0.15)', color: 'var(--accent-2)', padding: '0.15rem 0.4rem', borderRadius: 4, letterSpacing: '0.05em' }}>BETA</span>
             </div>
             <button onClick={onToggle} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <X size={16} />
@@ -203,8 +203,8 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
                     borderRadius: 12,
                     borderBottomRightRadius: msg.role === 'user' ? 4 : 12,
                     borderTopLeftRadius: msg.role === 'ai' ? 4 : 12,
-                    background: msg.role === 'user' ? 'rgba(124,92,255,0.2)' : (msg.error ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)'),
-                    border: `1px solid ${msg.role === 'user' ? 'rgba(124,92,255,0.3)' : (msg.error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)')}`
+                    background: msg.role === 'user' ? 'rgba(0, 123, 255,0.2)' : (msg.error ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)'),
+                    border: `1px solid ${msg.role === 'user' ? 'rgba(0, 123, 255,0.3)' : (msg.error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)')}`
                   }}>
                     <div style={{ fontSize: '0.8125rem', color: msg.error ? '#fca5a5' : '#e0e7ff', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                       {msg.text}
@@ -213,7 +213,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
                 ))}
                 {asking && (
                   <div style={{ alignSelf: 'flex-start', maxWidth: '85%', padding: '0.625rem 0.875rem', borderRadius: 12, borderTopLeftRadius: 4, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a5b4fc', fontSize: '0.8125rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a5f3fc', fontSize: '0.8125rem' }}>
                       <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Thinking...
                     </div>
                   </div>
@@ -266,14 +266,14 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
           width: 56,
           height: 56,
           borderRadius: 28,
-          background: 'linear-gradient(135deg, #7C5CFF 0%, #6D4AF0 100%)',
+          background: 'linear-gradient(135deg, #007BFF 0%, #0055FF 100%)',
           border: 'none',
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: isDragging.current ? 'grabbing' : 'grab',
-          boxShadow: '0 8px 24px rgba(124,92,255,0.4), inset 0 2px 4px rgba(255,255,255,0.2)',
+          boxShadow: '0 8px 24px rgba(0, 123, 255,0.4), inset 0 2px 4px rgba(255,255,255,0.2)',
           position: 'relative',
           touchAction: 'none' /* Prevents scroll when dragging on mobile */
         }}
@@ -281,7 +281,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
       >
         {isOpen ? <X size={24} /> : <Sparkles size={24} />}
         {!isOpen && overallHealthScore < 80 && (
-          <span style={{ position: 'absolute', top: 0, right: 0, width: 14, height: 14, background: '#ef4444', borderRadius: '50%', border: '2px solid #6D4AF0' }} />
+          <span style={{ position: 'absolute', top: 0, right: 0, width: 14, height: 14, background: '#ef4444', borderRadius: '50%', border: '2px solid #0055FF' }} />
         )}
       </button>
     </div>

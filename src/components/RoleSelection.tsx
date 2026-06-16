@@ -18,16 +18,16 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelect }) => {
       overflow: 'hidden',
     }}>
       {/* Background decoration */}
-      <div style={{ position: 'absolute', top: -200, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: 'radial-gradient(circle, rgba(124,92,255,0.08) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: -200, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: 'radial-gradient(circle, rgba(0, 123, 255,0.08) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: -200, right: -200, width: 800, height: 800, background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
 
       <div style={{ zIndex: 10, textAlign: 'center', marginBottom: '3rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <div style={{
             width: 48, height: 48, borderRadius: 12,
-            background: 'linear-gradient(135deg, #7C5CFF 0%, #6D4AF0 100%)',
+            background: 'linear-gradient(135deg, #007BFF 0%, #0055FF 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(124,92,255,0.4)',
+            boxShadow: '0 4px 20px rgba(0, 123, 255,0.4)',
             border: '1px solid rgba(255,255,255,0.2)'
           }}>
             <Shield size={24} color="#fff" strokeWidth={2.5} />

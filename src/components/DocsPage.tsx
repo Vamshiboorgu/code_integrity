@@ -12,7 +12,7 @@ interface DocsPageProps {
 const Section: React.FC<{ id: string; icon: React.ReactNode; title: string; children: React.ReactNode }> = ({ id, icon, title, children }) => (
   <section id={id} style={{ marginBottom: 44, scrollMarginTop: 90 }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-      <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(124,92,255,0.14)', border: '1px solid rgba(124,92,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-2)' }}>{icon}</div>
+      <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(0, 123, 255,0.14)', border: '1px solid rgba(0, 123, 255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-2)' }}>{icon}</div>
       <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', margin: 0 }}>{title}</h2>
     </div>
     <div style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.7 }}>{children}</div>
@@ -86,10 +86,10 @@ export const DocsPage: React.FC<DocsPageProps> = ({ onBack, onLaunch }) => {
           <Section id="how" icon={<GitMerge size={18} />} title="How linking works — signal fusion">
             Each requirement→code link gets a confidence score fusing multiple signals:
             <div style={{ margin: '14px 0' }}>
-              <Pill color="#7C5CFF">Semantic similarity · 65%</Pill>
+              <Pill color="#007BFF">Semantic similarity · 65%</Pill>
               <Pill color="#22C55E">Lexical overlap · 35%</Pill>
               <Pill color="#F59E0B">Coverage bonus · +8%</Pill>
-              <Pill color="#A78BFA">LLM adjudication · optional</Pill>
+              <Pill color="#00D4FF">LLM adjudication · optional</Pill>
             </div>
             Semantic similarity uses a local code-embedding model; lexical overlap matches identifiers and tokens;
             a small bonus is added when the code is test-covered. When a repo ships a ground-truth set, the link
@@ -113,7 +113,7 @@ export const DocsPage: React.FC<DocsPageProps> = ({ onBack, onLaunch }) => {
             Every artifact is classified into a typed taxonomy with a standardized, type-prefixed key:
             <div style={{ margin: '14px 0' }}>
               <Pill color="#A855F7">EPIC-</Pill><Pill color="#3B82F6">FEAT-</Pill><Pill color="#06B6D4">STORY-</Pill>
-              <Pill color="#7C5CFF">REQ-</Pill><Pill color="#14B8A6">NFR-</Pill><Pill color="#F43F5E">BUG-</Pill><Pill color="#F59E0B">TASK-</Pill>
+              <Pill color="#007BFF">REQ-</Pill><Pill color="#14B8A6">NFR-</Pill><Pill color="#F43F5E">BUG-</Pill><Pill color="#F59E0B">TASK-</Pill>
             </div>
             Type is decided <strong>source-first</strong> (a Jira issue type or a <Code>type</Code> column),
             then inferred from keywords, defaulting to <Code>REQ</Code>. Items with a real external key (Jira

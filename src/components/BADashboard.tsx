@@ -83,7 +83,7 @@ export const BADashboard: React.FC<BADashboardProps> = ({ requirements, kpis, hi
       {/* Header Area */}
       <div style={{ marginBottom: 8 }}>
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>
-          <Briefcase size={26} color="#7C5CFF" />
+          <Briefcase size={26} color="#007BFF" />
           Business Analyst Workspace <span style={{ fontWeight: 'normal' }}>👋</span>
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Track requirement implementation and ensure business objectives are met.</p>
@@ -253,7 +253,7 @@ export const BADashboard: React.FC<BADashboardProps> = ({ requirements, kpis, hi
             <div style={{ width: 120, height: 120, position: 'relative', marginLeft: 24 }}>
               <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)' }}>
                 <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                <circle cx="60" cy="60" r="50" fill="none" stroke="#7C5CFF" strokeWidth="8" strokeDasharray="314" strokeDashoffset={314 - (314 * kpis?.traceabilityCoverage / 100)} strokeLinecap="round" />
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#007BFF" strokeWidth="8" strokeDasharray="314" strokeDashoffset={314 - (314 * kpis?.traceabilityCoverage / 100)} strokeLinecap="round" />
               </svg>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', lineHeight: 1 }}>{kpis?.traceabilityCoverage}%</span>

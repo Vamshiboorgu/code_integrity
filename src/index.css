@@ -17,13 +17,13 @@
   --border-subtle:  rgba(255,255,255,0.04);
   --border-default: rgba(255,255,255,0.07);
   --border-strong:  rgba(255,255,255,0.11);
-  --border-accent:  rgba(124,92,255,0.35);
+  --border-accent:  rgba(0, 123, 255,0.35);
 
   /* Violet Accent */
-  --accent:         #7C5CFF;
-  --accent-2:       #9D7BFF;
-  --accent-glow:    rgba(124,92,255,0.30);
-  --accent-subtle:  rgba(124,92,255,0.10);
+  --accent:         #007BFF;
+  --accent-2:       #00D4FF;
+  --accent-glow:    rgba(0, 123, 255,0.30);
+  --accent-subtle:  rgba(0, 123, 255,0.10);
 
   /* Semantic */
   --success:        #22C55E;
@@ -51,8 +51,8 @@
   /* Legacy aliases kept for compatibility */
   --blue:           #3B82F6;
   --blue-light:     #8AB4F8;
-  --violet:         #7C5CFF;
-  --violet-light:   #9D7BFF;
+  --violet:         #007BFF;
+  --violet-light:   #00D4FF;
   --emerald:        #1FB454;
   --emerald-light:  #22C55E;
   --amber:          #D08700;
@@ -72,7 +72,7 @@
   --shadow-sm:  0 1px 2px rgba(0,0,0,0.5);
   --shadow-md:  0 4px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
   --shadow-lg:  0 12px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
-  --shadow-glow-accent: 0 0 40px rgba(124,92,255,0.14);
+  --shadow-glow-accent: 0 0 40px rgba(0, 123, 255,0.14);
   --shadow-glow-success: 0 0 40px rgba(34,197,94,0.10);
   --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.25);
 }
@@ -269,15 +269,15 @@ code, pre, kbd, .mono {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #7C5CFF 0%, #6D4AF0 100%);
+  background: linear-gradient(135deg, #007BFF 0%, #0055FF 100%);
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(124,92,255,0.35);
-  border-color: rgba(124,92,255,0.5);
+  box-shadow: 0 4px 16px rgba(0, 123, 255,0.35);
+  border-color: rgba(0, 123, 255,0.5);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #8B6CFF 0%, #7C5CFF 100%);
-  box-shadow: 0 6px 24px rgba(124,92,255,0.5);
+  background: linear-gradient(135deg, #00D4FF 0%, #007BFF 100%);
+  box-shadow: 0 6px 24px rgba(0, 123, 255,0.5);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0) scale(0.98); }
@@ -503,7 +503,7 @@ code, pre, kbd, .mono {
 }
 .code-tag-blue   { background: rgba(79,110,247,0.1); color: #7B9FFF; border-color: rgba(79,110,247,0.18); }
 .code-tag-red    { background: rgba(255,59,48,0.1); color: #FF6B63; border-color: rgba(255,59,48,0.18); }
-.code-tag-violet { background: rgba(123,97,255,0.1); color: #A78BFA; border-color: rgba(123,97,255,0.18); }
+.code-tag-violet { background: rgba(0, 123, 255,0.1); color: #00D4FF; border-color: rgba(0, 123, 255,0.18); }
 .code-tag-orange { background: rgba(255,149,0,0.1); color: #FFAA33; border-color: rgba(255,149,0,0.18); }
 .code-tag-muted  { background: rgba(255,255,255,0.04); color: var(--text-muted); border-color: var(--border-default); }
 

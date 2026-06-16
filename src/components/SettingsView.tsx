@@ -63,7 +63,7 @@ export const SettingsView: React.FC<Props> = ({ metrics }) => {
         </Panel>
       </div>
 
-      <div style={{ marginTop: 16, padding: '14px 18px', background: 'rgba(124,92,255,0.06)', border: '1px solid rgba(124,92,255,0.18)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 11, fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+      <div style={{ marginTop: 16, padding: '14px 18px', background: 'rgba(0, 123, 255,0.06)', border: '1px solid rgba(0, 123, 255,0.18)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 11, fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
         <Info size={17} color="var(--accent-2)" style={{ flexShrink: 0 }} />
         These values reflect the live engine. Fusion weights live in <code style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--code-green)' }}>engine/config.py</code>; the link threshold is recalibrated automatically against ground truth on every scan.
       </div>

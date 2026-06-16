@@ -38,7 +38,7 @@ export const DriftHighlights: React.FC<Props> = ({ kpis, onTabChange }) => {
       <Highlight icon={<FlaskConical size={22} />} value={k.deadTests ?? 0} label="Unlinked Tests"
         sub="Tests covering only orphan code" color="#F59E0B" onClick={() => onTabChange?.('drift')} />
       <Highlight icon={<FileWarning size={22} />} value={k.missingRequirements ?? 0} label="Unimplemented Reqs"
-        sub="Requirements with no code" color="#7C5CFF" onClick={() => onTabChange?.('drift')} />
+        sub="Requirements with no code" color="#007BFF" onClick={() => onTabChange?.('drift')} />
     </div>
   );
 };

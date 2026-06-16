@@ -30,7 +30,7 @@ import { SettingsView } from './components/SettingsView';
 import { TeamView } from './components/TeamView';
 import { RegressionsView } from './components/RegressionsView';
 import { Requirement, SecurityRisk, PerformanceRisk, OrphanCode, DeadTest } from './data/mockData';
-import { CheckCircle2, AlertCircle, Loader2, Terminal, ShieldCheck, Shield } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, Terminal, ShieldCheck, Shield, Brain, Sparkles, Cpu, Bot } from 'lucide-react';
 
 type Tab = 'overview' | 'traceability' | 'drift' | 'security' | 'performance';
 
@@ -42,6 +42,57 @@ function parseHash(): Screen {
   if (h.startsWith('/app')) return { role: 'dev', view: h.split('/')[2] || 'dashboard' };
   return { role: null, view: 'dashboard' };
 }
+
+const AnimatedFeatureHeading = () => {
+  const FEATURES = [
+    "Requirement Traceability",
+    "Drift Detection",
+    "Risk Analysis",
+    "Regression Monitoring",
+    "AI Insights"
+  ];
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((i) => (i + 1) % FEATURES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#fff', letterSpacing: '0.04em', lineHeight: 1.2, marginBottom: '1.0rem', position: 'relative', zIndex: 10 }}>
+      Code Integrity Powered By <br />
+      <span style={{
+        display: 'inline-grid',
+        marginTop: '1.0rem',
+        minHeight: '1.2em',
+      }}>
+        {FEATURES.map((feat, i) => (
+          <span
+            key={i}
+            style={{
+              gridArea: '1 / 1', // Overlaps all items in the exact same spot
+              transition: 'opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
+              opacity: index === i ? 1 : 0,
+              filter: index === i ? 'blur(0px)' : 'blur(8px)',
+              transform: index === i ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.96)',
+              pointerEvents: index === i ? 'auto' : 'none',
+              background: 'linear-gradient(90deg, #00D4FF 0%, #0055FF 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent'
+            }}
+          >
+            {feat}
+          </span>
+        ))}
+      </span>
+    </h2>
+  );
+};
 
 // Human "x ago" label from a millisecond timestamp (used by the landing status bar).
 function relativeTime(ms: number): string {
@@ -532,30 +583,54 @@ function App() {
         padding: '2rem 1rem',
       }}>
         <ParticlesBackground />
+
         {/* Background decoration (matches the app's visual language) */}
-        <div style={{ position: 'absolute', top: -200, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: 'radial-gradient(circle, rgba(124,92,255,0.08) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -200, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: 'radial-gradient(circle, rgba(0, 123, 255,0.08) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -200, right: -200, width: 800, height: 800, background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(10,10,20,0) 70%)', pointerEvents: 'none' }} />
 
         {/* Brand header */}
         <div style={{ zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #7C5CFF 0%, #6D4AF0 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(124,92,255,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #007BFF 0%, #0055FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0, 123, 255,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
             <Shield size={24} color="#fff" strokeWidth={2.5} />
           </div>
           <div style={{ textAlign: 'left' }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>CodeTrace</h1>
-            <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 600, marginTop: 4 }}>Integrity Engine</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '0.013em', lineHeight: 1 }}>IB Code Trace</h1>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 600, marginTop: 4 }}>Integrity Engine</p>
           </div>
         </div>
 
         {/* Hero Section */}
-        <div style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3rem', marginTop: '1rem', maxWidth: 1000 }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '1.25rem' }}>
-            Code That Ships <span style={{ color: '#A78BFA' }}>With Confidence</span>
-          </h2>
+        <div style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3rem', marginTop: '1rem', maxWidth: 1000, position: 'relative' }}>
 
-          <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, margin: 0, fontWeight: 400 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 1rem', background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.25)', borderRadius: '999px', marginBottom: '1.25rem', color: '#00D4FF', fontSize: '0.85rem', fontWeight: 600 }}>
+            <Sparkles size={16} />
+            <span>Advanced AI Reasoning</span>
+          </div>
+
+          <AnimatedFeatureHeading />
+
+          <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, margin: 0, fontWeight: 400, zIndex: 2 }}>
             Scan Any Repo Against Your Requirements. Catch Drift Before It Ships. Built For Teams That Care About Traceability.
           </p>
+
+          {/* Decorative floating AI icons */}
+          <style>{`
+            @keyframes floatIcon1 { 0%, 100% { transform: translateY(0px) rotate(-5deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
+            @keyframes floatIcon2 { 0%, 100% { transform: translateY(0px) rotate(5deg); } 50% { transform: translateY(-12px) rotate(-2deg); } }
+            @keyframes floatIcon3 { 0%, 100% { transform: translateY(0px) rotate(-8deg); } 50% { transform: translateY(-10px) rotate(0deg); } }
+          `}</style>
+
+          <div style={{ position: 'absolute', top: -20, left: -300, width: 56, height: 56, borderRadius: 16, background: 'linear-gradient(135deg, rgba(0, 123, 255,0.1) 0%, rgba(10,10,20,0.6) 100%)', border: '1px solid rgba(0, 123, 255,0.2)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 32px rgba(0, 123, 255,0.1)', color: '#00D4FF', zIndex: 1, animation: 'floatIcon1 6s ease-in-out infinite' }}>
+            <Brain size={24} strokeWidth={2} />
+          </div>
+
+          <div style={{ position: 'absolute', top: 30, right: -280, width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(10,10,20,0.6) 100%)', border: '1px solid rgba(59,130,246,0.2)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 32px rgba(59,130,246,0.1)', color: '#8AB4F8', zIndex: 1, animation: 'floatIcon2 7.5s ease-in-out infinite 1s' }}>
+            <Cpu size={20} strokeWidth={2} />
+          </div>
+
+          <div style={{ position: 'absolute', bottom: -40, left: -240, width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(10,10,20,0.6) 100%)', border: '1px solid rgba(34,197,94,0.2)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 32px rgba(34,197,94,0.1)', color: '#A8FF78', zIndex: 1, animation: 'floatIcon3 6.5s ease-in-out infinite 2s' }}>
+            <Bot size={18} strokeWidth={2} />
+          </div>
         </div>
 
         {/* Analysis Configuration form (runs the scan, then enters the dashboard) */}
