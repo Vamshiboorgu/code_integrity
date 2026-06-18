@@ -29,9 +29,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
 
   const systemNav = [
     { id: 'integrations', label: 'Integrations', icon: Plug, disabled: true },
-    { id: 'audit_logs', label: 'Audit Logs', icon: ScrollText, disabled: true },
-    { id: 'settings', label: 'Settings', icon: Settings, disabled: true },
-    { id: 'team', label: 'Team', icon: Users, disabled: true },
+    { id: 'audit_logs', label: 'Audit Logs', icon: ScrollText },
+    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'team', label: 'Team', icon: Users },
     { id: 'docs', label: 'Read Docs', icon: BookOpen },
   ];
 
@@ -71,9 +71,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
       <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
         <div style={{
           width: 32, height: 32, borderRadius: 8,
-          background: 'linear-gradient(135deg, #4f46e5 0%, #312e81 100%)',
+          background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 20px rgba(79,70,229,0.4)', border: '1px solid rgba(255,255,255,0.1)'
+          boxShadow: '0 0 20px rgba(6,182,212,0.4)', border: '1px solid rgba(255,255,255,0.1)'
         }}>
           <CustomLogo size={16} color="#fff" />
         </div>

@@ -26,9 +26,9 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelect }) => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <div style={{
             width: 48, height: 48, borderRadius: 12,
-            background: 'linear-gradient(135deg, #007BFF 0%, #0055FF 100%)',
+            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(0, 123, 255,0.4)',
+            boxShadow: '0 4px 20px rgba(6,182,212,0.4)',
             border: '1px solid rgba(255,255,255,0.2)'
           }}>
             <CustomLogo size={24} color="#fff" />

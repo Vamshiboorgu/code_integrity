@@ -44,7 +44,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
     if (!e.buttons) return;
     const dx = e.clientX - dragStart.current.x;
     const dy = e.clientY - dragStart.current.y;
-    
+
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
       isDragging.current = true;
       setPos({
@@ -119,7 +119,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
           cursor: 'default',
           animation: 'fadeIn 0.2s ease-out'
         }}
-        onPointerDown={e => e.stopPropagation()} /* Prevent drag when clicking inside popover */
+          onPointerDown={e => e.stopPropagation()} /* Prevent drag when clicking inside popover */
         >
           <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -191,7 +191,7 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
 
           {/* Ask AI Input & Conversation - Fixed at Bottom */}
           <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            
+
             {/* Conversation History */}
             {(messages.length > 0 || asking) && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: 200, overflowY: 'auto', paddingRight: '0.25rem' }}>
@@ -266,14 +266,14 @@ export const AIInsightsSidebar: React.FC<AIInsightsSidebarProps> = ({ aiInsights
           width: 56,
           height: 56,
           borderRadius: 28,
-          background: 'linear-gradient(135deg, #007BFF 0%, #0055FF 100%)',
+          background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
           border: 'none',
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: isDragging.current ? 'grabbing' : 'grab',
-          boxShadow: '0 8px 24px rgba(0, 123, 255,0.4), inset 0 2px 4px rgba(255,255,255,0.2)',
+          boxShadow: '0 8px 24px rgba(6,182,212,0.4), inset 0 2px 4px rgba(255,255,255,0.2)',
           position: 'relative',
           touchAction: 'none' /* Prevents scroll when dragging on mobile */
         }}

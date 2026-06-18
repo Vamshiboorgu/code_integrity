@@ -25,21 +25,21 @@ const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color })
               <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <Tooltip 
+          <Tooltip
             position={{ y: -20 }}
-            contentStyle={{ background: '#14152A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, fontSize: 12, padding: '4px 8px' }} 
-            itemStyle={{ color: 'rgba(255,255,255,0.85)' }} 
+            contentStyle={{ background: '#14152A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, fontSize: 12, padding: '4px 8px' }}
+            itemStyle={{ color: 'rgba(255,255,255,0.85)' }}
             cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }}
             labelStyle={{ display: 'none' }}
             formatter={(val: number) => [val, 'Value']}
           />
-          <Area 
-            type="monotone" 
-            dataKey="value" 
-            stroke={color} 
-            fillOpacity={1} 
-            fill={`url(#${gid})`} 
-            strokeWidth={1.8} 
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke={color}
+            fillOpacity={1}
+            fill={`url(#${gid})`}
+            strokeWidth={1.8}
             isAnimationActive={false}
             activeDot={{ r: 4, fill: '#fff', stroke: color, strokeWidth: 2 }}
           />
