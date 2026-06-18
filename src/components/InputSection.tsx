@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2, KeyRound, Plug, GitCompare } from 'lucide-react';
+import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2, KeyRound, Plug, GitCompare, FlaskConical } from 'lucide-react';
 
 export interface JiraConfig { url: string; email: string; token: string; jql: string; }
 
 interface InputSectionProps {
-  onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string) => void;
+  onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string, tcFile?: File | null) => void;
   initialJiraOpen?: boolean;
   lastScan?: {
     whenLabel?: string;
@@ -18,6 +18,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
   const [branch, setBranch] = useState('main');
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [reqFile, setReqFile] = useState<File | null>(null);
+  const [tcFile, setTcFile] = useState<File | null>(null);
   const [token, setToken] = useState('');
   const [cr, setCr] = useState('');
   const [jiraOpen, setJiraOpen] = useState(!!initialJiraOpen);
@@ -39,6 +40,10 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
     if (e.target.files && e.target.files[0]) setReqFile(e.target.files[0]);
   };
 
+  const handleTcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) setTcFile(e.target.files[0]);
+  };
+
   const handleSubmit = () => {
     // Warn up front — before the multi-minute scan — if there is no requirements
     // source. Without Jira or a requirements file there is nothing to trace against,
@@ -53,7 +58,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
       );
       if (!proceed) return;   // modal stays open, inputs preserved
     }
-    onSubmit(repoUrl, 'main', zipFile, reqFile, '', buildJira(), '');
+    onSubmit(repoUrl, 'main', zipFile, reqFile, '', buildJira(), '', tcFile);
   };
 
   return (
@@ -149,6 +154,30 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
               : <><FileText size={14} /> Drop .xlsx, .csv, .json</>}
           </label>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Excel, CSV, JSON, or JIRA export</p>
+        </div>
+
+        {/* Test cases (optional) — drives the QA verification view */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>
+            <FlaskConical size={11} /> Test Cases File
+          </label>
+          <label
+            style={{
+              width: '100%', height: 50, borderRadius: 10, cursor: 'pointer',
+              border: `1.5px dashed ${tcFile ? 'rgba(245,158,11,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              background: tcFile ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.02)',
+              color: tcFile ? '#fcd34d' : 'rgba(255,255,255,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+              fontSize: '0.8125rem', fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
+              margin: 0,
+            }}
+          >
+            <input type="file" style={{ display: 'none' }} accept=".xlsx,.csv" onChange={handleTcChange} />
+            {tcFile
+              ? <><CheckCircle2 size={14} color="#F59E0B" /> {tcFile.name}</>
+              : <><FlaskConical size={14} /> Drop .xlsx, .csv</>}
+          </label>
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.375rem' }}>Optional — QA rules to verify against the code</p>
         </div>
 
       </div>

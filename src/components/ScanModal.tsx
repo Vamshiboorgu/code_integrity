@@ -5,7 +5,7 @@ import { InputSection, JiraConfig } from './InputSection';
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string) => void;
+  onSubmit: (repoUrl: string, branch: string, zipFile: File | null, reqFile: File | null, token: string, jira: JiraConfig | null, cr: string, tcFile?: File | null) => void;
   jiraOpen?: boolean;
 }
 

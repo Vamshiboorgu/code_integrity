@@ -3,6 +3,7 @@ import { TopBar } from './components/TopBar';
 import { Sidebar } from './components/Sidebar';
 import { StatCards } from './components/StatCards';
 import { TraceabilityMap } from './components/TraceabilityMap';
+import { QATestCases } from './components/QATestCases';
 import { CoverageTrend } from './components/CoverageTrend';
 import { DriftHighlights } from './components/DriftHighlights';
 import { TopUnlinkedFiles } from './components/TopUnlinkedFiles';
@@ -116,7 +117,23 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-const API_BASE = 'https://ratios-adrian-institutional-holds.trycloudflare.com';
+const API_BASE = 'https://cheesy-subject-tightness.ngrok-free.dev';
+
+// ngrok's free tier serves a browser interstitial unless requests carry this header.
+// Inject it for API_BASE calls only (harmless for any other backend host).
+if (typeof window !== 'undefined' && !(window as any).__apiFetchPatched) {
+  (window as any).__apiFetchPatched = true;
+  const _origFetch = window.fetch.bind(window);
+  window.fetch = (input: any, init: any = {}) => {
+    const url = typeof input === 'string' ? input : input?.url;
+    if (url && url.startsWith(API_BASE)) {
+      const headers = new Headers(init?.headers || {});
+      headers.set('ngrok-skip-browser-warning', 'true');
+      init = { ...init, headers };
+    }
+    return _origFetch(input, init);
+  };
+}
 
 function App() {
     const _init = parseHash();
@@ -146,6 +163,7 @@ function App() {
     const [orphanCode, setOrphanCode] = useState<OrphanCode[]>([]);
     const [deadTests, setDeadTests] = useState<DeadTest[]>([]);
     const [aiInsights, setAiInsights] = useState<any[]>([]);
+    const [qaData, setQaData] = useState<any>(null);   // /api/qa — uploaded test-case verdicts
 
     const fetchBackendData = useCallback(async () => {
         try {
@@ -173,6 +191,11 @@ function App() {
             fetch(`${API_BASE}/api/regressions`, { credentials: 'include' }).then(r => r.json())
                 .then(d => setRegressionsData(d))
                 .catch(() => setRegressionsData(null));
+
+            // QA test-case verdicts (only present when a test-cases file was uploaded).
+            fetch(`${API_BASE}/api/qa`, { credentials: 'include' }).then(r => r.json())
+                .then(d => setQaData(d))
+                .catch(() => setQaData(null));
 
             const reqList = resMap.requirements || [];
             // Source of truth for "missing": the backend drift report. /api/trace always
@@ -407,7 +430,7 @@ function App() {
     }, [fetchBackendData]);
 
     const handleScanStart = useCallback(
-        async (repoUrl: string, branch: string, _zipFile: File | null, reqFile: File | null, token = '', jira: any = null, cr = '') => {
+        async (repoUrl: string, branch: string, _zipFile: File | null, reqFile: File | null, token = '', jira: any = null, cr = '', tcFile: File | null = null) => {
             const url = (repoUrl || '').trim();
             if (!/^https?:\/\//.test(url)) {
                 setScanError('Enter a valid repository URL (must start with http:// or https://).');
@@ -433,6 +456,10 @@ function App() {
                 if (reqFile) {
                     payload.requirements_b64 = await fileToBase64(reqFile);
                     payload.requirements_name = reqFile.name;
+                }
+                if (tcFile) {
+                    payload.testcases_b64 = await fileToBase64(tcFile);
+                    payload.testcases_name = tcFile.name;
                 }
 
                 const res = await fetch(`${API_BASE}/api/scan`, {
@@ -481,10 +508,10 @@ function App() {
     // to the Developer workspace) and open the dashboard. On failure we stay on the
     // form — handleScanStart has already surfaced the error.
     const handleLandingScan = useCallback(
-        async (repoUrl: string, branch: string, zip: File | null, reqFile: File | null, token: string, jira: any, cr: string) => {
-            const ok = await handleScanStart(repoUrl, branch, zip, reqFile, token, jira, cr);
+        async (repoUrl: string, branch: string, zip: File | null, reqFile: File | null, token: string, jira: any, cr: string, tcFile?: File | null) => {
+            const ok = await handleScanStart(repoUrl, branch, zip, reqFile, token, jira, cr, tcFile ?? null);
             if (ok) {
-                setRole('dev');
+                setRole(tcFile ? 'qa' : 'dev');   // if QA test cases were uploaded, land in the QA workspace
                 navigate('/app/dashboard');
             }
         },
@@ -720,10 +747,20 @@ function App() {
                                 </p>
                             </div>
                             <StatCards kpis={kpis} metrics={backendMetrics} history={history} />
-                            <div className="dashboard-grid-2">
-                                <TraceabilityMap requirements={requirements} onSelect={setSelectedRequirement} />
-                                <CoverageTrend history={history} coverage={kpis?.traceabilityCoverage} />
-                            </div>
+                            {/* QA role: when a test-cases file was uploaded, lead with the test-case
+                                verdicts instead of the code traceability map. Otherwise (dev role, or
+                                QA with no test cases) keep the original map — behaviour as before. */}
+                            {role === 'qa' && qaData?.available ? (
+                                <>
+                                    <QATestCases data={qaData} />
+                                    <CoverageTrend history={history} coverage={kpis?.traceabilityCoverage} />
+                                </>
+                            ) : (
+                                <div className="dashboard-grid-2">
+                                    <TraceabilityMap requirements={requirements} onSelect={setSelectedRequirement} />
+                                    <CoverageTrend history={history} coverage={kpis?.traceabilityCoverage} />
+                                </div>
+                            )}
                             <DriftHighlights kpis={kpis} onTabChange={handleTabChange} />
                             <div className="dashboard-grid-2">
                                 <TopUnlinkedFiles orphanCode={orphanCode} onTabChange={handleTabChange} />
