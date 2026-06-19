@@ -47,7 +47,7 @@ export const ParticlesBackground: React.FC = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(167, 139, 250, 0.2)'; // Very subtle purple nodes
+        ctx.fillStyle = 'rgba(167, 139, 250, 0.35)'; // Balanced visibility (70%)
         ctx.fill();
       });
 
@@ -62,8 +62,8 @@ export const ParticlesBackground: React.FC = () => {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            // Dynamic opacity based on distance, max 0.1 (very low visibility)
-            const opacity = (1 - dist / 150) * 0.1;
+            // Dynamic opacity based on distance, max 0.21 for balanced visibility
+            const opacity = (1 - dist / 150) * 0.21;
             ctx.strokeStyle = `rgba(167, 139, 250, ${opacity})`;
             ctx.lineWidth = 1;
             ctx.stroke();

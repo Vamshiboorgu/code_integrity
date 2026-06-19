@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2, KeyRound, Plug, GitCompare, FlaskConical } from 'lucide-react';
+import { GitCommit, Upload, FileText, GitBranch, CheckCircle2, ChevronRight, FolderOpen, Globe2, Link2, KeyRound, Plug, GitCompare, FlaskConical, AlertTriangle } from 'lucide-react';
 
 export interface JiraConfig { url: string; email: string; token: string; jql: string; }
 
@@ -26,6 +26,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
   const [jiraEmail, setJiraEmail] = useState('');
   const [jiraToken, setJiraToken] = useState('');
   const [jiraJql, setJiraJql] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const buildJira = (): JiraConfig | null =>
     (jiraUrl && jiraEmail && jiraToken)
@@ -44,21 +45,18 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
     if (e.target.files && e.target.files[0]) setTcFile(e.target.files[0]);
   };
 
-  const handleSubmit = () => {
-    // Warn up front — before the multi-minute scan — if there is no requirements
-    // source. Without Jira or a requirements file there is nothing to trace against,
-    // so the analysis would run for minutes only to land on an empty traceability view.
-    if (!buildJira() && !reqFile) {
-      const proceed = window.confirm(
-        'No requirements source connected.\n\n' +
-        'You have not connected Jira or uploaded a requirements file, so there is nothing ' +
-        'to trace this code and tests against — the traceability view will be empty.\n\n' +
-        'Click Cancel to add a requirements file or connect Jira first, or OK to analyze ' +
-        'the repository anyway (code, tests and risks only).'
-      );
-      if (!proceed) return;   // modal stays open, inputs preserved
-    }
+  const executeScan = () => {
     onSubmit(repoUrl, 'main', zipFile, reqFile, '', buildJira(), '', tcFile);
+    setShowConfirm(false);
+  };
+
+  const handleSubmit = () => {
+    // Warn up front — before the multi-minute scan — if there is no requirements source.
+    if (!buildJira() && !reqFile) {
+      setShowConfirm(true);
+      return;
+    }
+    executeScan();
   };
 
   return (
@@ -266,6 +264,46 @@ export const InputSection: React.FC<InputSectionProps> = ({ onSubmit, initialJir
               <span>{text}</span>
             </div>
           ))}
+        </div>
+      )}
+      {/* Custom Centered Modal for Missing Requirements */}
+      {showConfirm && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          paddingTop: '5rem',
+          animation: 'fadeIn 0.2s ease-out',
+        }}>
+          <div style={{
+            width: '100%', minWidth: 380, maxWidth: 640,
+            background: 'var(--bg-elevated)', border: '1px solid rgba(245, 158, 11, 0.5)',
+            borderRadius: 16, padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.7)',
+            display: 'flex', gap: '1rem', alignItems: 'flex-start',
+            animation: 'fadeUp 0.3s cubic-bezier(0.16,1,0.3,1)'
+          }}>
+            <div style={{
+              background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <AlertTriangle size={28} color="#f59e0b" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)' }}>Requirements Document Needed</h3>
+              <p style={{ margin: '0.75rem 0 1.5rem 0', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                You must connect Jira or upload a requirements file to proceed. Without a requirements source, the traceability engine has nothing to analyze the code against.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="btn btn-primary"
+                  style={{ padding: '10px 20px', borderRadius: 8, fontSize: '0.85rem' }}
+                >
+                  Add now
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
