@@ -11,6 +11,8 @@ export interface Requirement {
   name: string;
   description: string;
   codeFiles: string[];
+  // Per-block link evidence (why each code block was linked) — surfaced on hover.
+  codeBlocks?: { name?: string; file?: string; reason?: string; confidence?: number; service_role?: string; service_detail?: string; tested?: boolean }[];
   testFiles: string[];
   status: 'complete' | 'partial' | 'missing';
   coverage: number;

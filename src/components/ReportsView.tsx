@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileBarChart, Download, FileJson, FileSpreadsheet } from 'lucide-react';
+import { FileBarChart, Download, FileJson, FileSpreadsheet, ShieldCheck } from 'lucide-react';
 import { Requirement, SecurityRisk, PerformanceRisk, OrphanCode, DeadTest } from '../data/mockData';
 import { ViewHeader } from './AuditLogsView';
 
@@ -11,6 +11,7 @@ interface Props {
   deadTests: DeadTest[];
   kpis?: any;
   metrics?: any;
+  apiBase?: string;   // backend base URL, for the SARIF export fetch
 }
 
 function download(filename: string, content: string, type: string) {
@@ -30,7 +31,7 @@ function toCSV(reqs: Requirement[]): string {
   return [head.join(','), ...rows].join('\n');
 }
 
-export const ReportsView: React.FC<Props> = ({ requirements, securityRisks, performanceRisks, orphanCode, deadTests, kpis, metrics }) => {
+export const ReportsView: React.FC<Props> = ({ requirements, securityRisks, performanceRisks, orphanCode, deadTests, kpis, metrics, apiBase }) => {
   const stamp = new Date().toISOString().slice(0, 10);
 
   const exportJSON = () => {
@@ -45,13 +46,26 @@ export const ReportsView: React.FC<Props> = ({ requirements, securityRisks, perf
   };
   const exportCSV = () => download(`requirements-${stamp}.csv`, toCSV(requirements), 'text/csv');
 
+  // SARIF is computed by the backend from the current scan's flags; fetch + download.
+  const exportSARIF = async () => {
+    try {
+      const res = await fetch(`${apiBase || ''}/api/sarif`, { credentials: 'include' });
+      const doc = await res.json();
+      download(`codetrace-${stamp}.sarif`, JSON.stringify(doc, null, 2), 'application/sarif+json');
+    } catch {
+      /* backend unreachable — no-op */
+    }
+  };
+
   const k = kpis || {};
   const stats = [
     { label: 'Requirements', value: k.totalRequirements ?? 0 },
-    { label: 'Implemented', value: k.implementedRequirements ?? 0 },
-    { label: 'Coverage', value: (k.traceabilityCoverage ?? 0) + '%' },
+    { label: 'Implemented', value: k.implementedRequirements ?? 0 },   // has code AND a test
+    { label: 'Partial', value: k.partialRequirements ?? 0 },           // has code, no test
+    { label: 'Missing', value: k.missingRequirements ?? 0 },           // no code
+    { label: 'Coverage', value: (k.traceabilityCoverage ?? 0) + '%' }, // % with any code
     { label: 'Linked tests', value: k.linkedTests ?? 0 },
-    { label: 'Orphan code', value: k.orphanCode ?? 0 },
+    { label: 'Untraceable code', value: k.orphanCode ?? 0 },
     { label: 'Security risks', value: k.securityRisks ?? 0 },
     { label: 'Performance risks', value: k.performanceRisks ?? 0 },
     { label: 'Dead tests', value: k.deadTests ?? 0 },
@@ -72,6 +86,7 @@ export const ReportsView: React.FC<Props> = ({ requirements, securityRisks, perf
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={exportJSON} className="btn btn-primary" style={{ padding: '9px 14px', fontSize: '0.8rem' }}><FileJson size={15} /> Export JSON</button>
             <button onClick={exportCSV} className="btn btn-secondary" style={{ padding: '9px 14px', fontSize: '0.8rem' }}><FileSpreadsheet size={15} /> Requirements CSV</button>
+            <button onClick={exportSARIF} className="btn btn-secondary" style={{ padding: '9px 14px', fontSize: '0.8rem' }}><ShieldCheck size={15} /> SARIF</button>
           </div>
         </div>
 
