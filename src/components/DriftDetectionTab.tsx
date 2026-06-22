@@ -200,7 +200,6 @@ export const DriftDetectionTab: React.FC<DriftDetectionTabProps> = ({ requiremen
                       {req.category}
                     </div>
                   </div>
-                  <ExternalLink size={12} color="var(--text-faint)" style={{ flexShrink: 0, marginTop: 2 }} />
                 </div>
               </CardItem>
             ))}

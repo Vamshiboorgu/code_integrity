@@ -125,17 +125,17 @@ const API_BASE = 'https://cheesy-subject-tightness.ngrok-free.dev';
 // ngrok's free tier serves a browser interstitial unless requests carry this header.
 // Inject it for API_BASE calls only (harmless for any other backend host).
 if (typeof window !== 'undefined' && !(window as any).__apiFetchPatched) {
-  (window as any).__apiFetchPatched = true;
-  const _origFetch = window.fetch.bind(window);
-  window.fetch = (input: any, init: any = {}) => {
-    const url = typeof input === 'string' ? input : input?.url;
-    if (url && url.startsWith(API_BASE)) {
-      const headers = new Headers(init?.headers || {});
-      headers.set('ngrok-skip-browser-warning', 'true');
-      init = { ...init, headers };
-    }
-    return _origFetch(input, init);
-  };
+    (window as any).__apiFetchPatched = true;
+    const _origFetch = window.fetch.bind(window);
+    window.fetch = (input: any, init: any = {}) => {
+        const url = typeof input === 'string' ? input : input?.url;
+        if (url && url.startsWith(API_BASE)) {
+            const headers = new Headers(init?.headers || {});
+            headers.set('ngrok-skip-browser-warning', 'true');
+            init = { ...init, headers };
+        }
+        return _origFetch(input, init);
+    };
 }
 
 function App() {
@@ -757,7 +757,7 @@ function App() {
                             <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 600 }}>
                                 {regressionsData.regressions.length} regression{regressionsData.regressions.length === 1 ? '' : 's'} vs baseline
                                 {regressionsData.baseline?.cr ? ` ${regressionsData.baseline.cr}` : ''}
-                            </span>
+                            </span>handle the shared API request setup in App.tsx
                             <span style={{ fontSize: '0.8rem', color: 'var(--danger)', fontWeight: 600 }}>Review →</span>
                         </button>
                     )}

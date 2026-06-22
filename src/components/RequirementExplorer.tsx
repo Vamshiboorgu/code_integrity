@@ -243,11 +243,10 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
                   <div key={file} style={{
                     display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem',
                     borderRadius: 10, background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', transition: 'all 0.15s',
-                  }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.06)'; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)'; }}>
+                    border: '1px solid rgba(255,255,255,0.06)'
+                  }}>
                     <FileCode2 size={15} color="#00D4FF" style={{ flexShrink: 0 }} />
                     <code style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file}</code>
-                    <ExternalLink size={13} color="rgba(255,255,255,0.3)" style={{ flexShrink: 0 }} />
                   </div>
                 ))}
               </div>

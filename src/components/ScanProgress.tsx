@@ -37,8 +37,8 @@ export const ScanProgress: React.FC<Props> = ({ active, status, startMs }) => {
   const total = status.total || 0;
   const step = status.step || 0;
   const cloning = status.state === 'cloning';
-  // Cloning is phase 0; analysis fills step/total. Keep a sliver visible while cloning.
-  const pct = total > 0 ? Math.max(4, Math.round((step / total) * 100)) : 6;
+  // Cloning is phase 0; analysis fills step/total.
+
 
   const elapsed = Math.max(0, Math.floor((now - startMs) / 1000));
   const limit = status.limit_seconds || 0;
@@ -85,24 +85,12 @@ export const ScanProgress: React.FC<Props> = ({ active, status, startMs }) => {
           )}
         </div>
 
-        {/* Progress bar */}
-        <div style={{
-          height: 10, borderRadius: 999, background: 'rgba(255,255,255,0.06)',
-          overflow: 'hidden', marginBottom: 8,
-        }}>
-          <div style={{
-            height: '100%', width: `${pct}%`, borderRadius: 999,
-            background: 'linear-gradient(90deg, var(--accent), #00D4FF)',
-            transition: 'width 0.5s cubic-bezier(0.16,1,0.3,1)',
-          }} />
-        </div>
-
         {/* Segmented phase ticks */}
         {total > 0 && (
-          <div style={{ display: 'flex', gap: 4, marginBottom: 18 }}>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
             {Array.from({ length: total }).map((_, i) => (
               <div key={i} style={{
-                flex: 1, height: 4, borderRadius: 2,
+                flex: 1, height: 6, borderRadius: 3,
                 background: i < step ? 'var(--accent)' : 'rgba(255,255,255,0.08)',
                 transition: 'background 0.4s ease',
               }} />

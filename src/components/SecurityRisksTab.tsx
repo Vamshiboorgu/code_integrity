@@ -213,7 +213,6 @@ export const SecurityRisksTab: React.FC<SecurityRisksTabProps> = ({ securityRisk
                         </span>
                         <span className="code-tag" style={{ fontSize: '0.5625rem' }}>{risk.id}</span>
                         <div style={{ flex: 1 }} />
-                        <ExternalLink size={11} color="var(--text-faint)" />
                       </div>
 
                       {/* Risk type */}
