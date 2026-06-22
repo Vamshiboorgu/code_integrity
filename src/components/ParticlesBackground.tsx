@@ -21,7 +21,7 @@ export const ParticlesBackground: React.FC = () => {
 
     const initParticles = () => {
       particles = [];
-      const numParticles = Math.floor((canvas.width * canvas.height) / 25000); // adjust density
+      const numParticles = Math.floor((canvas.width * canvas.height) / 75000); // adjust density
       for (let i = 0; i < numParticles; i++) {
         particles.push({
           x: Math.random() * canvas.width,

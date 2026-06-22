@@ -28,21 +28,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, lastSc
   ];
 
   const systemNav = [
-    { id: 'integrations', label: 'Integrations', icon: Plug, disabled: true },
-    { id: 'audit_logs', label: 'Audit Logs', icon: ScrollText },
-    { id: 'settings', label: 'Settings', icon: Settings },
-    { id: 'team', label: 'Team', icon: Users },
     { id: 'docs', label: 'Read Docs', icon: BookOpen },
+    { id: 'integrations', label: 'Integrations', icon: Plug, disabled: true, hidden: true },
+    { id: 'audit_logs', label: 'Audit Logs', icon: ScrollText, hidden: true },
+    { id: 'settings', label: 'Settings', icon: Settings, hidden: true },
+    { id: 'team', label: 'Team', icon: Users, hidden: true },
   ];
 
-  const NavItem = ({ item }: { item: typeof mainNav[0] & { disabled?: boolean } }) => {
+  const NavItem = ({ item }: { item: typeof mainNav[0] & { disabled?: boolean, hidden?: boolean } }) => {
     const active = activeTab === item.id;
     return (
       <button
         disabled={item.disabled}
         onClick={() => !item.disabled && onTabChange(item.id)}
         style={{
-          display: 'flex', alignItems: 'center', gap: '0.875rem',
+          display: item.hidden ? 'none' : 'flex', alignItems: 'center', gap: '0.875rem',
           width: '100%', padding: '0.625rem 1rem',
           background: active ? 'linear-gradient(90deg, rgba(79,70,229,0.15) 0%, transparent 100%)' : 'transparent',
           border: 'none', borderLeft: `3px solid ${active ? '#6366f1' : 'transparent'}`,

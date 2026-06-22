@@ -150,14 +150,6 @@ export const TopBar: React.FC<TopBarProps> = ({ isScanning, scanMessage, onRunSc
           Review Another Repo
         </button>
 
-        <button style={{
-          width: 42, height: 42, borderRadius: 12, position: 'relative',
-          background: 'var(--bg-surface)', border: '1px solid var(--border-default)',
-          color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Bell size={17} />
-          <span style={{ position: 'absolute', top: 9, right: 10, width: 7, height: 7, borderRadius: '50%', background: 'var(--danger)', border: '2px solid var(--bg-surface)' }} />
-        </button>
 
         {/* Role Switcher */}
         <div style={{ position: 'relative' }}>
