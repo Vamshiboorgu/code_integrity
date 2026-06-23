@@ -33,10 +33,10 @@ export const DriftHighlights: React.FC<Props> = ({ kpis, onTabChange }) => {
   const k = kpis || {};
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-      <Highlight icon={<Code2 size={22} />} value={k.orphanCode ?? 0} label="Untraceable Code"
-        sub="Code not traced to any requirement" color="#F43F5E" onClick={() => onTabChange?.('drift')} />
+      <Highlight icon={<Code2 size={22} />} value={k.orphanCode ?? 0} label="Orphan Code"
+        sub="Blocks with no requirement" color="#F43F5E" onClick={() => onTabChange?.('drift')} />
       <Highlight icon={<FlaskConical size={22} />} value={k.deadTests ?? 0} label="Unlinked Tests"
-        sub="Tests covering only untraceable code" color="#F59E0B" onClick={() => onTabChange?.('drift')} />
+        sub="Tests covering only orphan code" color="#F59E0B" onClick={() => onTabChange?.('drift')} />
       <Highlight icon={<FileWarning size={22} />} value={k.missingRequirements ?? 0} label="Unimplemented Reqs"
         sub="Requirements with no code" color="#007BFF" onClick={() => onTabChange?.('drift')} />
     </div>

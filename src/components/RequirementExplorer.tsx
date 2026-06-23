@@ -14,46 +14,6 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
   const risks = securityRisks || [];
   const linkedSecurityRisks = risks.filter((r) => r.linkedRequirement === requirement.id);
 
-  // Link evidence: map each code file to the reason its block was linked, so the
-  // trace isn't a black box — hover a code file to see WHY it satisfies the requirement.
-  const evidenceByFile = new Map<string, string>();
-  const roleByFile = new Map<string, string>();
-  (requirement.codeBlocks || []).forEach((b) => {
-    if (b.file && b.reason && !evidenceByFile.has(b.file)) evidenceByFile.set(b.file, b.reason);
-    if (b.file && b.service_role && !roleByFile.has(b.file)) {
-      roleByFile.set(b.file, b.service_detail ? `${b.service_role} · ${b.service_detail}` : b.service_role);
-    }
-  });
-
-  // Explain WHY this requirement has its status. "partial" = implemented in code but
-  // not fully test-covered; the detail names exactly which blocks lack a linked test.
-  const blocks = requirement.codeBlocks || [];
-  const untested = blocks.filter((b) => b.tested === false);
-  const testedCount = blocks.length - untested.length;
-  let statusInfo: { color: string; title: string; detail: string; untestedNames?: string[] } | null = null;
-  if (requirement.status === 'partial') {
-    statusInfo = {
-      color: '#f59e0b',
-      title: 'Partially verified — implemented but under-tested',
-      detail: requirement.testFiles.length === 0
-        ? `Code implements this requirement, but no test is linked to any of its ${blocks.length} code block(s) — ${requirement.coverage}% coverage.`
-        : `Only ${testedCount} of ${blocks.length} implementing code block(s) have a linked test (${requirement.coverage}% coverage). It needs ≥80% to count as complete.`,
-      untestedNames: untested.map((b) => b.name || '').filter(Boolean).slice(0, 8),
-    };
-  } else if (requirement.status === 'missing') {
-    statusInfo = {
-      color: '#ef4444',
-      title: 'Not implemented',
-      detail: 'No code block was confirmed to satisfy this requirement (best match fell below the link threshold).',
-    };
-  } else if (requirement.status === 'complete') {
-    statusInfo = {
-      color: '#10b981',
-      title: 'Implemented & verified',
-      detail: `Traced to ${requirement.codeFiles.length} code file(s) with ${requirement.coverage}% of its code blocks covered by tests.`,
-    };
-  }
-
   return (
     <div
       onClick={onClose}
@@ -118,37 +78,7 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
 
         {/* Body */}
         <div style={{ overflow: 'auto', flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-
-          {/* Why this status (esp. why "partial") */}
-          {statusInfo && (
-            <div style={{
-              background: `${statusInfo.color}12`, border: `1px solid ${statusInfo.color}33`,
-              borderRadius: 14, padding: '1rem 1.25rem',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusInfo.color, boxShadow: `0 0 8px ${statusInfo.color}` }} />
-                <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: statusInfo.color }}>{statusInfo.title}</span>
-              </div>
-              <p style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0 }}>
-                {statusInfo.detail}
-              </p>
-              {statusInfo.untestedNames && statusInfo.untestedNames.length > 0 && (
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                    Untested code blocks
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {statusInfo.untestedNames.map((n) => (
-                      <span key={n} style={{ fontSize: '0.6875rem', fontFamily: 'JetBrains Mono, monospace', color: '#fcd34d', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.28)', borderRadius: 6, padding: '2px 7px' }}>
-                        {n}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
+          
           {/* Coverage */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)' }}>
             <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em', minWidth: 90 }}>Coverage</span>
@@ -183,22 +113,11 @@ export const RequirementExplorer: React.FC<RequirementExplorerProps> = ({ requir
                 </div>
                 {requirement.codeFiles.length === 0
                   ? <div style={{ fontSize: '0.75rem', color: '#fca5a5' }}>No implementations</div>
-                  : requirement.codeFiles.map((f) => {
-                    const why = evidenceByFile.get(f);
-                    const role = roleByFile.get(f);
-                    return (
-                    <div key={f} style={{ marginBottom: 4 }}>
-                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', fontFamily: 'JetBrains Mono, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160, cursor: why ? 'help' : 'default' }} title={why ? `${f}\n\nWhy linked: ${why}` : f}>
-                        {f.split('/').pop()}{why ? ' ⓘ' : ''}
-                      </div>
-                      {role && (
-                        <span style={{ display: 'inline-block', marginTop: 2, fontSize: '0.625rem', fontWeight: 700, color: '#fcd34d', background: 'rgba(234,179,8,0.12)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 5, padding: '1px 6px', letterSpacing: '0.04em' }} title="Detected service role (boundary the requirement maps to)">
-                          {role}
-                        </span>
-                      )}
+                  : requirement.codeFiles.map((f) => (
+                    <div key={f} style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', fontFamily: 'JetBrains Mono, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160, marginBottom: 2 }} title={f}>
+                      {f.split('/').pop()}
                     </div>
-                    );
-                  })}
+                  ))}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', paddingTop: 28 }}><ChevronRight size={16} color="rgba(255,255,255,0.2)" /></div>

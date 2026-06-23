@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Target, FlaskConical, Boxes, GitMerge, TrendingUp, TrendingDown, ShieldCheck } from 'lucide-react';
+import { BookOpen, Target, FlaskConical, Boxes, GitMerge, TrendingUp, TrendingDown } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface StatCardsProps {
@@ -99,16 +99,11 @@ export const StatCards: React.FC<StatCardsProps> = ({ kpis, metrics, history }) 
   };
 
   const cards: OneCard[] = [
-    // Integrity Score = % of requirements that are BOTH implemented AND test-covered
-    // (the real "done & verified" figure) — the headline metric.
-    { label: 'Integrity Score', value: (metrics?.integrity_score ?? 0) + '%', icon: <ShieldCheck size={18} />, color: '#A855F7', series: series('implemented'), trend: trend('implemented') },
     { label: 'Total Requirements', value: String(k.totalRequirements ?? '—'), icon: <BookOpen size={18} />, color: '#007BFF', series: series('requirements'), trend: trend('requirements') },
     { label: 'Coverage Rate', value: (k.traceabilityCoverage ?? 0) + '%', icon: <Target size={18} />, color: '#22C55E', series: series('coverage'), trend: trend('coverage') },
     { label: 'Linked Tests', value: String(k.linkedTests ?? '—'), icon: <FlaskConical size={18} />, color: '#06B6D4', series: series('linked'), trend: trend('linked') },
     { label: 'Code Blocks', value: String(counts.code_blocks ?? '—'), icon: <Boxes size={18} />, color: '#3B82F6', series: series('blocks'), trend: trend('blocks') },
-    // "Verified links" = implementing links (LLM-confirmed / above threshold), NOT
-    // the raw top-K candidate count — an honest number.
-    { label: 'Verified Links', value: String(metrics?.confirmed_links ?? counts.links ?? '—'), icon: <GitMerge size={18} />, color: '#F59E0B', series: series('links'), trend: trend('links') },
+    { label: 'Active Links', value: String(counts.links ?? '—'), icon: <GitMerge size={18} />, color: '#F59E0B', series: series('links'), trend: trend('links') },
   ];
 
   return (

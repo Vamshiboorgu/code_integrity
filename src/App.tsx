@@ -4,9 +4,6 @@ import { Sidebar } from './components/Sidebar';
 import { StatCards } from './components/StatCards';
 import { TraceabilityMap } from './components/TraceabilityMap';
 import { QATestCases } from './components/QATestCases';
-import { Hotspots } from './components/Hotspots';
-import { ChangeRisk } from './components/ChangeRisk';
-import { Ownership } from './components/Ownership';
 import { CoverageTrend } from './components/CoverageTrend';
 import { DriftHighlights } from './components/DriftHighlights';
 import { TopUnlinkedFiles } from './components/TopUnlinkedFiles';
@@ -145,11 +142,6 @@ function App() {
     const [scanJiraOpen, setScanJiraOpen] = useState(false);
     const [postgresEnabled, setPostgresEnabled] = useState(false);
     const [regressionsData, setRegressionsData] = useState<any>(null);
-    const [deadCode, setDeadCode] = useState<any[]>([]);   // reachability dead code (/api/drift)
-    const [deleteCandidates, setDeleteCandidates] = useState<any[]>([]);  // untraceable AND uncalled
-    const [hotspots, setHotspots] = useState<any[]>([]);   // churn x complexity (/api/hotspots)
-    const [changeRisk, setChangeRisk] = useState<any>(null);   // diff risk score (/api/changerisk)
-    const [ownership, setOwnership] = useState<any[]>([]);     // bus factor / ownership (/api/ownership)
     const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null);
     const [aiPanelOpen, setAiPanelOpen] = useState(false);
     const [scanModalOpen, setScanModalOpen] = useState(false);
@@ -205,21 +197,6 @@ function App() {
                 .then(d => setQaData(d))
                 .catch(() => setQaData(null));
 
-            // Code hotspots (churn x complexity).
-            fetch(`${API_BASE}/api/hotspots`, { credentials: 'include' }).then(r => r.json())
-                .then(d => setHotspots(d.hotspots || []))
-                .catch(() => setHotspots([]));
-
-            // Change-risk score for the latest commit.
-            fetch(`${API_BASE}/api/changerisk`, { credentials: 'include' }).then(r => r.json())
-                .then(d => setChangeRisk(d))
-                .catch(() => setChangeRisk(null));
-
-            // Ownership & bus factor (git blame).
-            fetch(`${API_BASE}/api/ownership`, { credentials: 'include' }).then(r => r.json())
-                .then(d => setOwnership(d.ownership || []))
-                .catch(() => setOwnership([]));
-
             const reqList = resMap.requirements || [];
             // Source of truth for "missing": the backend drift report. /api/trace always
             // returns the top-K candidate blocks regardless of confidence, so block-count
@@ -243,12 +220,6 @@ function App() {
                 const blocks = isMissing ? [] : (t.blocks || []);
 
                 const codeFiles = Array.from(new Set(blocks.map((b: any) => b.file))) as string[];
-                // Per-block evidence (why this code is linked) for the detail view.
-                const codeBlocks = blocks.map((b: any) => ({
-                    name: b.name, file: b.file, reason: b.reason, confidence: b.confidence,
-                    service_role: b.service_role, service_detail: b.service_detail,
-                    tested: !!(b.tests && b.tests.length > 0),
-                }));
 
                 const testFilesList: string[] = [];
                 blocks.forEach((b: any) => {
@@ -282,7 +253,6 @@ function App() {
                     name: apiReq.summary,
                     description: apiReq.description || '',
                     codeFiles,
-                    codeBlocks,
                     testFiles,
                     status,
                     coverage,
@@ -362,8 +332,6 @@ function App() {
                 status: 'dead' as const,
             }));
             setDeadTests(deadTestsList);
-            setDeadCode(resDrift.dead_code || []);
-            setDeleteCandidates(resDrift.delete_candidates || []);
 
             const totalReqs = processedRequirements.length;
             const implementedReqs = processedRequirements.filter(r => r.status === 'complete').length;
@@ -798,11 +766,6 @@ function App() {
                                 <TopUnlinkedFiles orphanCode={orphanCode} onTabChange={handleTabChange} />
                                 <RiskDistribution securityRisks={securityRisks} performanceRisks={performanceRisks} />
                             </div>
-                            <div className="dashboard-grid-2">
-                                <Hotspots hotspots={hotspots} />
-                                <ChangeRisk data={changeRisk} />
-                            </div>
-                            <Ownership data={ownership} />
                             <SignalFusionCard metrics={backendMetrics} />
                         </div>
                     )}
@@ -832,11 +795,11 @@ function App() {
                     )}
 
                     {view === 'issues' && (
-                        <DriftDetectionTab requirements={requirements} orphanCode={orphanCode} deadTests={deadTests} deadCode={deadCode} deleteCandidates={deleteCandidates} />
+                        <DriftDetectionTab requirements={requirements} orphanCode={orphanCode} deadTests={deadTests} />
                     )}
 
                     {view === 'reports' && (
-                        <ReportsView requirements={requirements} securityRisks={securityRisks} performanceRisks={performanceRisks} orphanCode={orphanCode} deadTests={deadTests} kpis={kpis} metrics={backendMetrics} apiBase={API_BASE} />
+                        <ReportsView requirements={requirements} securityRisks={securityRisks} performanceRisks={performanceRisks} orphanCode={orphanCode} deadTests={deadTests} kpis={kpis} metrics={backendMetrics} />
                     )}
 
                     {view === 'integrations' && (
