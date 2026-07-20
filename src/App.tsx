@@ -117,7 +117,9 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-const API_BASE = 'https://cheesy-subject-tightness.ngrok-free.dev';
+// Backend URL comes from the deploy environment (VITE_API_BASE on Vercel);
+// the ngrok tunnel stays as the local-dev fallback.
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://cheesy-subject-tightness.ngrok-free.dev';
 
 // ngrok's free tier serves a browser interstitial unless requests carry this header.
 // Inject it for API_BASE calls only (harmless for any other backend host).
